@@ -1,4 +1,4 @@
-package ua.kibenmister.tgflashcardsbot.config;
+package bot.telegram.flashcards.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

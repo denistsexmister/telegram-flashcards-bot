@@ -1,10 +1,10 @@
-package ua.kibenmister.tgflashcardsbot.controller;
+package bot.telegram.flashcards.controller;
 
 
 import com.vdurmont.emoji.EmojiParser;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ua.kibenmister.tgflashcardsbot.config.BotConfig;
+import bot.telegram.flashcards.config.BotConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

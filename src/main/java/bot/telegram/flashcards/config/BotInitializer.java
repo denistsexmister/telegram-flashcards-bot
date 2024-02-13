@@ -1,6 +1,6 @@
-package ua.kibenmister.tgflashcardsbot.config;
+package bot.telegram.flashcards.config;
 
-import ua.kibenmister.tgflashcardsbot.controller.MainController;
+import bot.telegram.flashcards.controller.MainController;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.ContextRefreshedEvent;
