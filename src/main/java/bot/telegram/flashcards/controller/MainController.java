@@ -2,7 +2,11 @@ package bot.telegram.flashcards.controller;
 
 
 import com.vdurmont.emoji.EmojiParser;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethodMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import bot.telegram.flashcards.config.BotConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -15,17 +19,20 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Slf4j
 @Component
 public class MainController extends TelegramLongPollingBot {
     final BotConfig config;
+    private final StartController startController;
 
     @Autowired
-    public MainController(BotConfig config) {
+    public MainController(BotConfig config, StartController startController) {
         super(EmojiParser.parseToUnicode(config.getToken()));
         this.config = config;
+        this.startController = startController;
 
         List<BotCommand> listOfCommands = new ArrayList<>();
         listOfCommands.add(new BotCommand("/start", "get a welcome message"));
@@ -51,16 +58,39 @@ public class MainController extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message msg = update.getMessage();
+            String msgText = msg.getText();
 
-            SendMessage sm = SendMessage.builder()
-                    .chatId(msg.getChatId())
-                    .text(msg.getText())
-                    .build();
-            try {
-                execute(sm);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
+            switch (msgText) {
+                case "/start" -> startController.startCommandReceived(update)
+                        .forEach(this::executeMessage);
+                default -> defaultMessage(msg.getChatId());
             }
+        } else if (update.hasCallbackQuery()) {
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            String callbackQueryData = callbackQuery.getData();
+
+            switch (callbackQueryData) {
+                case "GET_GUIDE_BUTTON_CLICKED" -> startController.getGuideButtonClicked(callbackQuery)
+                        .forEach(this::executeMessage);
+            }
+
         }
+    }
+
+    private <T extends Serializable, Method extends BotApiMethod<T>> void executeMessage(Method message) {
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void defaultMessage(long chatId) {
+        SendMessage commandNotFoundMessage = SendMessage.builder()
+                .chatId(chatId)
+                .text("Command was not recognized, please use commands from menu list!")
+                .build();
+
+        executeMessage(commandNotFoundMessage);
     }
 }
