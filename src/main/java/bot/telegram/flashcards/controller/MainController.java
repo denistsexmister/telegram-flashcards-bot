@@ -30,7 +30,7 @@ public class MainController extends TelegramLongPollingBot {
 
     @Autowired
     public MainController(BotConfig config, StartController startController) {
-        super(EmojiParser.parseToUnicode(config.getToken()));
+        super(config.getToken());
         this.config = config;
         this.startController = startController;
 
