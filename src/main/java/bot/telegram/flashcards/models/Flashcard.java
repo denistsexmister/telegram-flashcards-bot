@@ -6,21 +6,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
-@Table(name = "flashcards")
+@Table(name = "flashcard")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Flashcards {
-
+public class Flashcard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
-    @OneToMany(mappedBy = "packageId")
-    private List<Flashcard> flashcardList;
+    @ManyToOne
+    @JoinColumn(name = "package_id", referencedColumnName = "id")
+    private Flashcards packageId;
+
+    @Column(name = "question")
+    private String question;
+
+    @Column(name = "answer")
+    private String answer;
 }
