@@ -21,6 +21,6 @@ public class Flashcards {
     @Column(name = "id")
     private long id;
 
-    @OneToMany(mappedBy = "packageId")
+    @OneToMany(mappedBy = "flashcards")
     private List<Flashcard> flashcardList;
 }

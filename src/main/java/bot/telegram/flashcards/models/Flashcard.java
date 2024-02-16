@@ -20,7 +20,7 @@ public class Flashcard {
 
     @ManyToOne
     @JoinColumn(name = "package_id", referencedColumnName = "id")
-    private Flashcards packageId;
+    private Flashcards flashcards;
 
     @Column(name = "question")
     private String question;
