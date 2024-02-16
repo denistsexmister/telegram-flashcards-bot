@@ -1,17 +1,14 @@
 package bot.telegram.flashcards.controller;
 
 
-import com.vdurmont.emoji.EmojiParser;
+import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethodMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import bot.telegram.flashcards.config.BotConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -23,16 +20,19 @@ import java.io.Serializable;
 import java.util.*;
 
 @Slf4j
-@Component
+@Controller
 public class MainController extends TelegramLongPollingBot {
     final BotConfig config;
     private final StartController startController;
 
+    private final EducationController educationController;
+
     @Autowired
-    public MainController(BotConfig config, StartController startController) {
+    public MainController(BotConfig config, StartController startController, EducationController educationController) {
         super(config.getToken());
         this.config = config;
         this.startController = startController;
+        this.educationController = educationController;
 
         List<BotCommand> listOfCommands = new ArrayList<>();
         listOfCommands.add(new BotCommand("/start", "get a welcome message"));
@@ -63,6 +63,8 @@ public class MainController extends TelegramLongPollingBot {
             switch (msgText) {
                 case "/start" -> startController.startCommandReceived(update)
                         .forEach(this::executeMessage);
+
+            //TODO: add /starteducation command
                 default -> defaultMessage(msg.getChatId());
             }
         } else if (update.hasCallbackQuery()) {
