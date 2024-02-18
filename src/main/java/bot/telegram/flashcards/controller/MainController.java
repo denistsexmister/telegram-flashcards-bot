@@ -24,15 +24,17 @@ import java.util.*;
 public class MainController extends TelegramLongPollingBot {
     final BotConfig config;
     private final StartController startController;
+    private final HelpController helpController;
 
     private final EducationController educationController;
 
     @Autowired
-    public MainController(BotConfig config, StartController startController, EducationController educationController) {
+    public MainController(BotConfig config, StartController startController, EducationController educationController, HelpController helpController) {
         super(config.getToken());
         this.config = config;
         this.startController = startController;
         this.educationController = educationController;
+        this.helpController = helpController;
 
         List<BotCommand> listOfCommands = new ArrayList<>();
         listOfCommands.add(new BotCommand("/start", "get a welcome message"));
@@ -65,6 +67,7 @@ public class MainController extends TelegramLongPollingBot {
                         .forEach(this::executeMessage);
 
             //TODO: add /starteducation command
+                case "/help" -> executeMessage(helpController.helpCommandReceived(update));
                 default -> defaultMessage(msg.getChatId());
             }
         } else if (update.hasCallbackQuery()) {

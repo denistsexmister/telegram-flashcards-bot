@@ -3,6 +3,7 @@ package bot.telegram.flashcards.service;
 import bot.telegram.flashcards.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -12,13 +13,9 @@ import java.util.List;
 import bot.telegram.flashcards.repository.UserRepository;
 
 @Service
+@AllArgsConstructor
 public class StartService {
     private final UserRepository userRepository;
-
-    @Autowired
-    public StartService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public boolean addUserIfNotInRepo(long chatId) {
         boolean didUserExistInRepo = userRepository.existsById(chatId);
