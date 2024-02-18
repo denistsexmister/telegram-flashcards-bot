@@ -1,4 +1,4 @@
-package bot.telegram.flashcards.models.entservice;
+package bot.telegram.flashcards.service;
 
 import bot.telegram.flashcards.models.Flashcard;
 import bot.telegram.flashcards.models.Flashcards;
