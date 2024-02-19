@@ -1,16 +1,21 @@
 package bot.telegram.flashcards.service;
 
 import bot.telegram.flashcards.models.Flashcard;
-import bot.telegram.flashcards.repository.FlashcardsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import bot.telegram.flashcards.models.Flashcards;
+import bot.telegram.flashcards.repository.FlashcardRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Service
-public class EducationService {
-    private final FlashcardsRepository flashcardsRepository;
+import java.util.List;
 
-    @Autowired
-    public EducationService(FlashcardsRepository flashcardsRepository) {
-        this.flashcardsRepository = flashcardsRepository;
+@Service
+@AllArgsConstructor
+public class EducationService {
+    private final FlashcardRepository flashcardRepository;
+
+    public List<Flashcard> getFlashcard(Long id) {
+        return flashcardRepository.findFlashcardById(id);
+
     }
 }
+

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface FlashcardsRepository extends CrudRepository<Flashcard, Long> {
-    //Add List<Flashcard> into FlashcardsRepository for find by Flashcards Flashcard ID
-    List<Flashcard> findByFlashcardsId(Long flashcards);
+public interface FlashcardRepository extends CrudRepository<Flashcard, Long> {
+    List<Flashcard> findFlashcardById(Long id);
+
 }
