@@ -1,8 +1,7 @@
 package bot.telegram.flashcards.service;
 
 import bot.telegram.flashcards.models.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import bot.telegram.flashcards.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.List;
-import bot.telegram.flashcards.repository.UserRepository;
 
 @Service
 @AllArgsConstructor

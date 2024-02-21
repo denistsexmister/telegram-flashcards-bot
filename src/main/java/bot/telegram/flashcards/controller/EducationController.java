@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @AllArgsConstructor
@@ -23,8 +22,11 @@ public class EducationController {
         List<SendMessage> messages = new ArrayList<>();
 
         for(Flashcard flashcard : flashcards){
-            String messageText ="Question: " +  flashcard.getQuestion()+ "\nAnswer: " + flashcard.getAnswer();
+            String messageText ="Question:\n " +  flashcard.getQuestion();
             SendMessage message = new SendMessage();
+
+//            TODO: add if() for flashcard.getAnswer()
+
             message.setChatId(update.getMessage().getChatId().toString());
             message.setText(messageText);
             messages.add(message);
