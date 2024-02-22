@@ -66,7 +66,8 @@ public class MainController extends TelegramLongPollingBot {
                 case "/start" -> startController.startCommandReceived(update)
                         .forEach(this::executeMessage);
 
-                case "/starteducation" -> educationController.startEducationCommandReceived(update);
+                case "/starteducation" -> educationController.startEducationCommandReceived(update)
+                        .forEach(this::executeMessage);
                 case "/help" -> executeMessage(helpController.helpCommandReceived(update));
                 default -> defaultMessage(msg.getChatId());
             }
@@ -76,6 +77,12 @@ public class MainController extends TelegramLongPollingBot {
 
             switch (callbackQueryData) {
                 case "GET_GUIDE_BUTTON_CLICKED" -> startController.getGuideButtonClicked(callbackQuery)
+                        .forEach(this::executeMessage);
+
+                case "YES_BUTTON_CLICKED" -> educationController.getYesCommandButton(callbackQuery)
+                        .forEach(this::executeMessage);
+
+                case "NO_BUTTON_CLICKED" -> educationController.getNoCommandButton(callbackQuery)
                         .forEach(this::executeMessage);
             }
 

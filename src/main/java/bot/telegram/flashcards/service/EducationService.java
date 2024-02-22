@@ -27,22 +27,36 @@ public class EducationService {
                         "choose button \"Yes\" under message. Otherwise, choose \"No\".")
                 .build();
 
-        SendMessage yesAndNoButton = createYesAndNoButton(chatId);
+        SendMessage yesButton = createYesButton(chatId);
+        SendMessage noButton = createNoButton(chatId);
 
-        return List.of(educMessage, yesAndNoButton);
+        return List.of(educMessage, yesButton, noButton);
     }
 
-    private SendMessage createYesAndNoButton(long chatId) {
+    public SendMessage createNoButton(long chatId) {
+        return SendMessage.builder()
+                .chatId(chatId)
+                .replyMarkup(new InlineKeyboardMarkup(List.of
+                        (List.of(InlineKeyboardButton.builder()
+                                .text("No")
+                                .callbackData("NO_BUTTON")
+                                .build()))))
+                .build();
+    }
+
+    public SendMessage createYesButton(long chatId) {
         return SendMessage.builder()
                 .chatId(chatId)
                 .replyMarkup(new InlineKeyboardMarkup(List.of
                         (List.of(InlineKeyboardButton.builder()
                                 .text("Yes")
-                                .callbackData("yes")
+                                .callbackData("YES_BUTTON")
                                 .text("No")
-                                .callbackData("no")
+                                .callbackData("NO_BUTTON")
                                 .build()))))
                 .build();
     }
+
+
 }
 

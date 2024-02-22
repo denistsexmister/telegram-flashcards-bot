@@ -5,6 +5,9 @@ import bot.telegram.flashcards.service.EducationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.MemberStatus;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.ArrayList;
@@ -25,13 +28,25 @@ public class EducationController {
             String messageText ="Question:\n " +  flashcard.getQuestion();
             SendMessage message = new SendMessage();
 
-//            TODO: add if() for flashcard.getAnswer()
+            if(flashcard.getAnswer() != null){
+                messageText += "\nAnswer:\n " + flashcard.getAnswer();
+            } else{
+                messageText = "Question:\n " +  flashcard.getQuestion();
+            }
 
             message.setChatId(update.getMessage().getChatId().toString());
             message.setText(messageText);
             messages.add(message);
         }
         return messages;
+    }
+
+    public List<SendMessage> getYesCommandButton(CallbackQuery callbackQuery) {
+        return List.of(educationService.createYesButton(callbackQuery.getMessage().getChatId()));
+    }
+
+    public List<SendMessage> getNoCommandButton(CallbackQuery callbackQuery) {
+        return List.of(educationService.createNoButton(callbackQuery.getMessage().getChatId()));
     }
 
 }
