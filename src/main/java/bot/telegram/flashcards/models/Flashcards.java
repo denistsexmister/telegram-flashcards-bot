@@ -23,4 +23,7 @@ public class Flashcards {
 
     @OneToMany(mappedBy = "flashcards")
     private List<Flashcard> flashcardList;
+
+    @OneToMany(mappedBy = "flashcards")
+    private List<FlashcardsStatistics> flashcardsStatisticsList;
 }
