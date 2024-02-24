@@ -26,4 +26,8 @@ public class Flashcards {
 
     @OneToMany(mappedBy = "flashcards")
     private List<FlashcardsStatistics> flashcardsStatisticsList;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
