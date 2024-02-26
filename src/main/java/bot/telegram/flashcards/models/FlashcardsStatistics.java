@@ -2,6 +2,7 @@ package bot.telegram.flashcards.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -12,7 +13,6 @@ public class FlashcardsStatistics {
     @EmbeddedId
     private FlashcardsStatisticsPK id;
 
-    @Column
     @ManyToOne
     @JoinColumn(name = "flashcards_id")
     private Flashcards flashcards;
@@ -27,6 +27,7 @@ public class FlashcardsStatistics {
     private long studiedCards;
 
     @Embeddable
+    @EqualsAndHashCode
     public static class FlashcardsStatisticsPK implements Serializable {
         @Column
         @GeneratedValue(strategy = GenerationType.IDENTITY)
