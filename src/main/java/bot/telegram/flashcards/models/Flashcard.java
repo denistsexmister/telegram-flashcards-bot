@@ -1,30 +1,23 @@
 package bot.telegram.flashcards.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name = "flashcard")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class Flashcard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column
     private long id;
 
     @ManyToOne
     @JoinColumn(name = "packageId", referencedColumnName = "id")
     private FlashcardPackage flashcardPackage;
 
-    @Column(name = "question")
+    @Column
     private String question;
 
-    @Column(name = "answer")
+    @Column
     private String answer;
 }

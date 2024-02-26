@@ -1,22 +1,18 @@
 package bot.telegram.flashcards.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
-@Table(name = "users")
-@Getter
-@Setter
-@NoArgsConstructor
+@Table(name = "account")
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
-    @Column(name = "id")
+    @Column
     private long id;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
