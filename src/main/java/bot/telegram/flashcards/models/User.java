@@ -19,6 +19,6 @@ public class User {
     @Column(name = "id")
     private long id;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Flashcards> flashcardsList;
 }
