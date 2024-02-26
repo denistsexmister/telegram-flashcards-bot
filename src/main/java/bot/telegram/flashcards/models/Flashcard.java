@@ -19,8 +19,8 @@ public class Flashcard {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "package_id", referencedColumnName = "id")
-    private Flashcards flashcards;
+    @JoinColumn(name = "packageId", referencedColumnName = "id")
+    private FlashcardPackage flashcardPackage;
 
     @Column(name = "question")
     private String question;

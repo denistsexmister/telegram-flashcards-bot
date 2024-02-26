@@ -1,7 +1,6 @@
 package bot.telegram.flashcards.service;
 
 import bot.telegram.flashcards.models.Flashcard;
-import bot.telegram.flashcards.models.Flashcards;
 import bot.telegram.flashcards.repository.FlashcardRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

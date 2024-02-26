@@ -20,5 +20,5 @@ public class User {
     private long id;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Flashcards> flashcardsList;
+    private List<FlashcardPackage> flashcardPackageList;
 }

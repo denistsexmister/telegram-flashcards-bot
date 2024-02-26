@@ -17,8 +17,8 @@ public class StatisticsService {
 
     public SendMessage createMonthStatisticsByAllDecksMessage(long chatId) {
         List<FlashcardsStatistics> statisticsList =
-                statisticsRepository.findFlashcardsStatisticsByFlashcards(
-                        userRepository.findById(chatId).orElse(null).getFlashcardsList().getFirst());// TODO: change to something more adequate
+                statisticsRepository.findFlashcardsStatisticsByFlashcardPackage(
+                        userRepository.findById(chatId).orElse(null).getFlashcardPackageList().get(0));// TODO: change to something more adequate
 
         long failedCards, hardCards, studiedCards;
         failedCards = hardCards = studiedCards = 0;

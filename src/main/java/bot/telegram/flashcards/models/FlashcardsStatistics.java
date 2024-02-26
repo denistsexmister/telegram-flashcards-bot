@@ -14,8 +14,8 @@ public class FlashcardsStatistics {
     private FlashcardsStatisticsPK id;
 
     @ManyToOne
-    @JoinColumn(name = "flashcards_id")
-    private Flashcards flashcards;
+    @JoinColumn(name = "packageId")
+    private FlashcardPackage flashcardPackage;
 
     @Column
     private long hardCards;

@@ -9,25 +9,25 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Table(name = "flashcards")
+@Table(name = "flashcardPackage")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Flashcards {
+public class FlashcardPackage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
-    @OneToMany(mappedBy = "flashcards")
+    @OneToMany(mappedBy = "flashcardPackage")
     private List<Flashcard> flashcardList;
 
-    @OneToMany(mappedBy = "flashcards")
+    @OneToMany(mappedBy = "flashcardPackage")
     private List<FlashcardsStatistics> flashcardsStatisticsList;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 }
