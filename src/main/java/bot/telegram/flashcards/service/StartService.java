@@ -18,7 +18,7 @@ public class StartService {
     public boolean addUserIfNotInRepo(long chatId) {
         boolean didUserExistInRepo = userRepository.existsById(chatId);
         if (!didUserExistInRepo) {
-            userRepository.save(new User(chatId));
+            userRepository.save(new User(chatId, List.of()));
         }
 
         return didUserExistInRepo;
