@@ -15,7 +15,7 @@ import java.util.List;
 public class EducationService {
     private final FlashcardRepository flashcardRepository;
 
-    public List<Flashcard> getFlashcard(Long id) {
+    public Flashcard getFlashcard(Long id) {
         return flashcardRepository.findFlashcardById(id);
     }
 

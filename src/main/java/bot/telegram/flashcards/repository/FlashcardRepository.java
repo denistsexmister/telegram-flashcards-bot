@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface FlashcardRepository extends CrudRepository<Flashcard, Long> {
-    List<Flashcard> findFlashcardById(Long id);
+    Flashcard findFlashcardById(Long id);
 
 }

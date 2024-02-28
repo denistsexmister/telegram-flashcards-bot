@@ -5,6 +5,8 @@ import lombok.*;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Flashcard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

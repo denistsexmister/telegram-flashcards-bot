@@ -20,11 +20,10 @@ public class EducationController {
     private final EducationService educationService;
 
     public List<SendMessage> startEducationCommandReceived(Update update) {
-        List<Flashcard> flashcards = educationService.getFlashcard(update.getMessage().getChatId());
+        Flashcard flashcard = educationService.getFlashcard(update.getMessage().getChatId());
 
         List<SendMessage> messages = new ArrayList<>();
 
-        for(Flashcard flashcard : flashcards){
             String messageText ="Question:\n " +  flashcard.getQuestion();
             SendMessage message = new SendMessage();
 
@@ -37,7 +36,7 @@ public class EducationController {
             message.setChatId(update.getMessage().getChatId().toString());
             message.setText(messageText);
             messages.add(message);
-        }
+
         return messages;
     }
 
