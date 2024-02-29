@@ -1,7 +1,11 @@
 package bot.telegram.flashcards.service;
 
 import bot.telegram.flashcards.models.Flashcard;
+import bot.telegram.flashcards.models.FlashcardPackage;
+import bot.telegram.flashcards.models.User;
+import bot.telegram.flashcards.repository.FlashcardPackageRepository;
 import bot.telegram.flashcards.repository.FlashcardRepository;
+import bot.telegram.flashcards.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -9,11 +13,14 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
 public class EducationService {
     private final FlashcardRepository flashcardRepository;
+    private final FlashcardPackageRepository flashcardPackageRepository;
+    private final UserRepository userRepository;
 
     public Flashcard getFlashcard(Long id) {
         return flashcardRepository.findFlashcardById(id);
@@ -57,5 +64,14 @@ public class EducationService {
     }
 
 
+    public FlashcardPackage getFlashcardPackage(long packageId) throws NoSuchElementException {
+        return flashcardPackageRepository.findById(packageId).orElseThrow();
+    }
+
+    public List<FlashcardPackage> getFlashcardPackageListByUser(long chatId) throws NoSuchElementException {
+        User user = userRepository.findById(chatId).orElseThrow();
+
+        return user.getFlashcardPackageList();
+    }
 }
 
