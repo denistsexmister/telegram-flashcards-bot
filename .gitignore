@@ -1,4 +1,4 @@
-project_settings.properties
+misc/
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
