@@ -14,6 +14,9 @@ public class FlashcardPackage {
     @Column
     private long id;
 
+    @Column
+    private String title;
+
     @OneToMany(mappedBy = "flashcardPackage")
     private List<Flashcard> flashcardList;
 
