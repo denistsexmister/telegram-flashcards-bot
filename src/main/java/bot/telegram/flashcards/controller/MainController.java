@@ -67,8 +67,7 @@ public class MainController extends TelegramLongPollingBot {
                 case "/start" -> startController.startCommandReceived(update)
                         .forEach(this::executeMessage);
 
-                case "/starteducation" -> educationController.startEducationCommandReceived(update)
-                        .forEach(this::executeMessage);
+                case "/starteducation" -> executeMessage(educationController.startEducationCommandReceived(update));
                 case "/statistics" -> executeMessage(statisticsController.statisticsCommandReceived(update));
                 case "/help" -> executeMessage(helpController.helpCommandReceived(update));
                 default -> defaultMessage(msg.getChatId());
