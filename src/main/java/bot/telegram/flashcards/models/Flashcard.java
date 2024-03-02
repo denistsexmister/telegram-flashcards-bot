@@ -1,5 +1,6 @@
 package bot.telegram.flashcards.models;
 
+import bot.telegram.flashcards.models.temporary.FlashcardEducationList;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,9 @@ public class Flashcard {
     @ManyToOne
     @JoinColumn(name = "packageId", referencedColumnName = "id")
     private FlashcardPackage flashcardPackage;
+
+    @OneToOne(mappedBy = "flashcard")
+    private FlashcardEducationList flashcardEducationList;
 
     @Column
     private String question;
