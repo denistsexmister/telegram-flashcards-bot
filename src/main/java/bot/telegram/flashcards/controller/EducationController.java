@@ -5,7 +5,9 @@ import bot.telegram.flashcards.service.EducationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -57,5 +59,16 @@ public class EducationController {
         return List.of(educationService.createNoButton(callbackQuery.getMessage().getChatId()));
     }
 
+    public EditMessageText startEducation(CallbackQuery callbackQuery) {
+        long flashcardPackageId = Long.parseLong(callbackQuery.getData().split("_")[2]);
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+        long chatId = callbackQuery.getMessage().getChatId();
+
+        return educationService.generateFlashcardList(flashcardPackageId, chatId, messageId);
+    }
+
+    public EditMessageText showAnswer(CallbackQuery callbackQuery) {
+        return null;
+    }
 }
 
