@@ -17,7 +17,7 @@ public class FlashcardPackage {
     @Column
     private String title;
 
-    @OneToMany(mappedBy = "flashcardPackage")
+    @OneToMany(mappedBy = "flashcardPackage", fetch = FetchType.EAGER)
     private List<Flashcard> flashcardList;
 
     @OneToMany(mappedBy = "flashcardPackage")
