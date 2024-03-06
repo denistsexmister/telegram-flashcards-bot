@@ -3,6 +3,8 @@ package bot.telegram.flashcards.controller;
 import bot.telegram.flashcards.models.FlashcardPackage;
 import bot.telegram.flashcards.service.EducationService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -21,30 +23,37 @@ public class EducationController {
 
     private final EducationService educationService;
 
+    private static final Logger log = LoggerFactory.getLogger(EducationController.class);
+
     public SendMessage startEducationCommandReceived(Update update) {
-        long chatId = update.getMessage().getChatId();
-        List<FlashcardPackage> flashcardPackageList =
-                educationService.getFlashcardPackageListByUser(chatId);
+        try {
+            long chatId = update.getMessage().getChatId();
+            List<FlashcardPackage> flashcardPackageList =
+                    educationService.getFlashcardPackageListByUser(chatId);
 
-        SendMessage flashcardPackageChoiceMessage = new SendMessage();
-        flashcardPackageChoiceMessage.setChatId(chatId);
+            SendMessage flashcardPackageChoiceMessage = new SendMessage();
+            flashcardPackageChoiceMessage.setChatId(chatId);
 
-        if (flashcardPackageList.isEmpty()) {
-            flashcardPackageChoiceMessage.setText("There is no flashcard packages created yet, you can create one using /something command!");
-        } else {
-            List<List<InlineKeyboardButton>> buttonRowList = new ArrayList<>();
-            flashcardPackageList.forEach((f) -> {
-                InlineKeyboardButton button = InlineKeyboardButton.builder()
-                        .text(f.getTitle())
-                        .callbackData("FLASHCARD_PACKAGE_%d_SELECTED".formatted(f.getId()))
-                        .build();
-                buttonRowList.add(List.of(button));
-            });
-            flashcardPackageChoiceMessage.setText("Choose flashcard package you want to practise with:");
-            flashcardPackageChoiceMessage.setReplyMarkup(new InlineKeyboardMarkup(buttonRowList));
+            if (flashcardPackageList.isEmpty()) {
+                flashcardPackageChoiceMessage.setText("There is no flashcard packages created yet, you can create one using /something command!");
+            } else {
+                List<List<InlineKeyboardButton>> buttonRowList = new ArrayList<>();
+                flashcardPackageList.forEach((f) -> {
+                    InlineKeyboardButton button = InlineKeyboardButton.builder()
+                            .text(f.getTitle())
+                            .callbackData("FLASHCARD_PACKAGE_%d_SELECTED".formatted(f.getId()))
+                            .build();
+                    buttonRowList.add(List.of(button));
+                });
+                flashcardPackageChoiceMessage.setText("Choose flashcard package you want to practise with:");
+                flashcardPackageChoiceMessage.setReplyMarkup(new InlineKeyboardMarkup(buttonRowList));
+            }
+
+            return flashcardPackageChoiceMessage;
+        }catch (Exception e){
+            log.error("Error: cannot start education command received", e);
+            return null;
         }
-
-        return flashcardPackageChoiceMessage;
 
 //        FlashcardPackage flashcardPackage = educationService.getFlashcardPackage(1);
 

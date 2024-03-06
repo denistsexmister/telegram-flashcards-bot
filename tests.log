@@ -1,16 +1,1 @@
-683  [main] INFO  b.t.f.TgFlashcardsBotApplication - Starting TgFlashcardsBotApplication using Java 21 with PID 20624 (C:\JavaProject\FlashcardsProject\telegram-flashcards-bot\target\classes started by danyz in C:\JavaProject\FlashcardsProject\telegram-flashcards-bot)
-685  [main] INFO  b.t.f.TgFlashcardsBotApplication - No active profile set, falling back to 1 default profile: "default"
-4275 [main] INFO  b.t.f.TgFlashcardsBotApplication - Started TgFlashcardsBotApplication in 3.957 seconds (process running for 4.697)
-4279 [main] INFO  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
-660  [main] INFO  b.t.f.TgFlashcardsBotApplication - Starting TgFlashcardsBotApplication using Java 21 with PID 11024 (C:\JavaProject\FlashcardsProject\telegram-flashcards-bot\target\classes started by danyz in C:\JavaProject\FlashcardsProject\telegram-flashcards-bot)
-668  [main] INFO  b.t.f.TgFlashcardsBotApplication - No active profile set, falling back to 1 default profile: "default"
-4135 [main] INFO  b.t.f.TgFlashcardsBotApplication - Started TgFlashcardsBotApplication in 3.837 seconds (process running for 4.619)
-4139 [main] INFO  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
-4173 [main] WARN  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
-4166 [main] WARN  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
-4241 [main] WARN  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
-4157 [main] WARN  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
-4158 [main] WARN  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
-4558 [main] WARN  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
-4182 [main] WARN  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
-4210 [main] WARN  b.t.f.TgFlashcardsBotApplication - TgFlashcardsBotApplication started
+6158 [main] WARN  b.t.f.TgFlashcardsBotApplication - Bot started

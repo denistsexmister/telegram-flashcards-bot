@@ -9,6 +9,8 @@ import bot.telegram.flashcards.repository.FlashcardPackageRepository;
 import bot.telegram.flashcards.repository.FlashcardRepository;
 import bot.telegram.flashcards.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -27,6 +29,8 @@ public class EducationService {
     private final FlashcardPackageRepository flashcardPackageRepository;
     private final UserRepository userRepository;
     private final FlashcardEducationListRepository flashcardEducationListRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(EducationService.class);
 
     public Flashcard getFlashcard(Long id) {
         return flashcardRepository.findFlashcardById(id);
@@ -63,8 +67,6 @@ public class EducationService {
                         (List.of(InlineKeyboardButton.builder()
                                 .text("Yes")
                                 .callbackData("YES_BUTTON")
-                                .text("No")
-                                .callbackData("NO_BUTTON")
                                 .build()))))
                 .build();
     }
@@ -75,37 +77,48 @@ public class EducationService {
     }
 
     public List<FlashcardPackage> getFlashcardPackageListByUser(long chatId) throws NoSuchElementException {
-        User user = userRepository.findById(chatId).orElseThrow();
+        try {
+            User user = userRepository.findById(chatId).orElseThrow();
 
-        return user.getFlashcardPackageList();
+            return user.getFlashcardPackageList();
+        }catch (Exception e){
+            log.error("Cannot get flashcard package list", e);
+            return List.of();
+        }
     }
 
     public EditMessageText generateFlashcardList(long flashcardPackageId, long chatId, int messageId) {
-        FlashcardPackage flashcardPackage = flashcardPackageRepository.findById(flashcardPackageId).orElseThrow();
-        List<Flashcard> flashcardList = flashcardPackage.getFlashcardList();
+        try {
 
-        Collections.shuffle(flashcardList);
+            FlashcardPackage flashcardPackage = flashcardPackageRepository.findById(flashcardPackageId).orElseThrow();
+            List<Flashcard> flashcardList = flashcardPackage.getFlashcardList();
 
-        List<FlashcardEducationList> flashcardEducationList = new ArrayList<>();
-        for (int i = 0; i < flashcardList.size(); i++) {
-            flashcardEducationList.add(
-                    new FlashcardEducationList(
-                            new FlashcardEducationList.FlashcardEducationListPK(i + 1, userRepository.findById(chatId).orElseThrow()),
-                            flashcardList.get(i)
-                    )
-            );
+            Collections.shuffle(flashcardList);
+
+            List<FlashcardEducationList> flashcardEducationList = new ArrayList<>();
+            for (int i = 0; i < flashcardList.size(); i++) {
+                flashcardEducationList.add(
+                        new FlashcardEducationList(
+                                new FlashcardEducationList.FlashcardEducationListPK(i + 1, userRepository.findById(chatId).orElseThrow()),
+                                flashcardList.get(i)
+                        )
+                );
+            }
+
+            flashcardEducationListRepository.saveAll(flashcardEducationList);
+            EditMessageText editMessage = EditMessageText.builder()
+                    .chatId(chatId)
+                    .messageId(messageId)
+                    .text("Flashcard 1/" + flashcardList.size() + "\n\nQuestion:\n" + flashcardList.get(0).getQuestion())
+                    .replyMarkup(new InlineKeyboardMarkup(List.of(List.of(
+                            InlineKeyboardButton.builder()
+                                    .callbackData("SHOW_ANSWER_CLICKED").text("Show answer").build()))))
+                    .build();
+            return editMessage;
+        }catch (Exception e){
+            log.error("Cannot generate flashcard list", e);
+            return null;
         }
-
-        flashcardEducationListRepository.saveAll(flashcardEducationList);
-        EditMessageText editMessage = EditMessageText.builder()
-                .chatId(chatId)
-                .messageId(messageId)
-                .text("Flashcard 1/" + flashcardList.size() + "\n\nQuestion:\n" + flashcardList.get(0).getQuestion())
-                .replyMarkup(new InlineKeyboardMarkup(List.of(List.of(
-                        InlineKeyboardButton.builder()
-                                .callbackData("SHOW_ANSWER_CLICKED").text("Show answer").build()))))
-                .build();
-        return editMessage;
     }
 }
 
