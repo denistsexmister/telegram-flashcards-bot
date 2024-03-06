@@ -32,3 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### logs ###
+src/main/java/bot/telegram/flashcards/logs
