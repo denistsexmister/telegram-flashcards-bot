@@ -68,7 +68,10 @@ public class EducationController {
     }
 
     public EditMessageText showAnswer(CallbackQuery callbackQuery) {
-        return null;
+        long chatId = callbackQuery.getMessage().getChatId();
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+
+        return educationService.changeMsgToMsgWithShownAnswer(chatId, messageId);
     }
 }
 
