@@ -20,6 +20,9 @@ public class User {
     @OneToMany(mappedBy = "flashcardEducationListPK.user")
     private List<FlashcardEducationList> flashcardEducationList;
 
+    @Column
+    private Long currentFlashcard;
+
     @Builder
     private static User createUserWithId(long id) {
         User user = new User();
