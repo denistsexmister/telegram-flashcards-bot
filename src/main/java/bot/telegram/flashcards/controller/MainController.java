@@ -89,6 +89,8 @@ public class MainController extends TelegramLongPollingBot {
                 case "0%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, 0));
                 case "25%_BUTTON_CLICKED", "50%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, 1));
                 case "75%_BUTTON_CLICKED", "100%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, 2));
+                case "SHOW_ANSWER_REPETITION_CLICKED" -> executeMessage(educationController.showAnswerRepetition(callbackQuery));
+                case "NEXT_QUESTION_REPETITION_CLICKED" -> executeMessage(educationController.nextQuestionRepetition(callbackQuery));
                 default -> {
                     if (callbackQueryData.matches("FLASHCARD_PACKAGE_\\d+_SELECTED")) {
                         executeMessage(educationController.startEducation(callbackQuery));
