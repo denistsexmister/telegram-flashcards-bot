@@ -8,8 +8,6 @@ import java.util.List;
 @Entity
 @Table(name = "account")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class User {
     @Id
     @Column
@@ -17,4 +15,11 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<FlashcardPackage> flashcardPackageList;
+
+    @Builder
+    private static User createUserWithId(long id) {
+        User user = new User();
+        user.setId(id);
+        return user;
+    }
 }
