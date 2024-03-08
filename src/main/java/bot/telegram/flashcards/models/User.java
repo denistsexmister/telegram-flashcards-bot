@@ -1,6 +1,7 @@
 package bot.telegram.flashcards.models;
 
 import bot.telegram.flashcards.models.temporary.FlashcardEducationList;
+import bot.telegram.flashcards.models.temporary.FlashcardRepetitionList;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,9 @@ public class User {
 
     @OneToMany(mappedBy = "flashcardEducationListPK.user")
     private List<FlashcardEducationList> flashcardEducationList;
+
+    @OneToMany(mappedBy = "flashcardRepetitionListPK.user")
+    private List<FlashcardRepetitionList> flashcardRepetitionList;
 
     @Column
     private Long currentFlashcard;
