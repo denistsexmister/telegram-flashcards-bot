@@ -79,12 +79,6 @@ public class MainController extends TelegramLongPollingBot {
             switch (callbackQueryData) {
                 case "GET_GUIDE_BUTTON_CLICKED" -> startController.getGuideButtonClicked(callbackQuery)
                         .forEach(this::executeMessage);
-
-                case "YES_BUTTON_CLICKED" -> educationController.getYesCommandButton(callbackQuery)
-                        .forEach(this::executeMessage);
-
-                case "NO_BUTTON_CLICKED" -> educationController.getNoCommandButton(callbackQuery)
-                        .forEach(this::executeMessage);
                 case "SHOW_ANSWER_CLICKED" -> executeMessage(educationController.showAnswer(callbackQuery));
                 case "0%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, 0));
                 case "25%_BUTTON_CLICKED", "50%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, 1));

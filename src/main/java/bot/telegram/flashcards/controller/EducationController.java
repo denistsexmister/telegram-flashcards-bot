@@ -51,14 +51,6 @@ public class EducationController {
 
     }
 
-    public List<SendMessage> getYesCommandButton(CallbackQuery callbackQuery) {
-        return List.of(educationService.createYesButton(callbackQuery.getMessage().getChatId()));
-    }
-
-    public List<SendMessage> getNoCommandButton(CallbackQuery callbackQuery) {
-        return List.of(educationService.createNoButton(callbackQuery.getMessage().getChatId()));
-    }
-
     public EditMessageText startEducation(CallbackQuery callbackQuery) {
         long flashcardPackageId = Long.parseLong(callbackQuery.getData().split("_")[2]);
         int messageId = ((Message) callbackQuery.getMessage()).getMessageId();

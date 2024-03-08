@@ -27,48 +27,6 @@ public class EducationService {
     private final FlashcardEducationListRepository flashcardEducationListRepository;
     private final FlashcardRepetitionListRepository flashcardRepetitionListRepository;
 
-    public Flashcard getFlashcard(Long id) {
-        return flashcardRepository.findFlashcardById(id);
-    }
-
-    public List<SendMessage> educationMessage(long chatId, String userFirstName) {
-        SendMessage educMessage = SendMessage.builder()
-                .chatId(chatId)
-                .text("Hello, " + userFirstName + ". If you know answer on question what you see on screen, " +
-                        "choose button \"Yes\" under message. Otherwise, choose \"No\".")
-                .build();
-
-        SendMessage yesButton = createYesButton(chatId);
-        SendMessage noButton = createNoButton(chatId);
-
-        return List.of(educMessage, yesButton, noButton);
-    }
-
-    public SendMessage createNoButton(long chatId) {
-        return SendMessage.builder()
-                .chatId(chatId)
-                .replyMarkup(new InlineKeyboardMarkup(List.of
-                        (List.of(InlineKeyboardButton.builder()
-                                .text("No")
-                                .callbackData("NO_BUTTON")
-                                .build()))))
-                .build();
-    }
-
-    public SendMessage createYesButton(long chatId) {
-        return SendMessage.builder()
-                .chatId(chatId)
-                .replyMarkup(new InlineKeyboardMarkup(List.of
-                        (List.of(InlineKeyboardButton.builder()
-                                .text("Yes")
-                                .callbackData("YES_BUTTON")
-                                .text("No")
-                                .callbackData("NO_BUTTON")
-                                .build()))))
-                .build();
-    }
-
-
     public FlashcardPackage getFlashcardPackage(long packageId) throws NoSuchElementException {
         return flashcardPackageRepository.findById(packageId).orElseThrow();
     }
