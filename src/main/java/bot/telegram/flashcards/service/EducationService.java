@@ -83,6 +83,7 @@ public class EducationService {
     public EditMessageText generateFlashcardList(long flashcardPackageId, long chatId, int messageId) {
         FlashcardPackage flashcardPackage = flashcardPackageRepository.findById(flashcardPackageId).orElseThrow();
         List<Flashcard> flashcardList = flashcardPackage.getFlashcardList();
+        User user = userRepository.findById(chatId).orElseThrow();
 
         Collections.shuffle(flashcardList);
 
@@ -90,13 +91,16 @@ public class EducationService {
         for (int i = 0; i < flashcardList.size(); i++) {
             flashcardEducationList.add(
                     new FlashcardEducationList(
-                            new FlashcardEducationList.FlashcardEducationListPK(i + 1, userRepository.findById(chatId).orElseThrow()),
+                            new FlashcardEducationList.FlashcardEducationListPK(i + 1, user),
                             flashcardList.get(i)
                     )
             );
         }
 
         flashcardEducationListRepository.saveAll(flashcardEducationList);
+        user.setCurrentFlashcard(1L);
+        userRepository.save(user);
+
         EditMessageText editMessage = EditMessageText.builder()
                 .chatId(chatId)
                 .messageId(messageId)
@@ -106,6 +110,32 @@ public class EducationService {
                                 .callbackData("SHOW_ANSWER_CLICKED").text("Show answer").build()))))
                 .build();
         return editMessage;
+    }
+
+    public EditMessageText changeMsgToMsgWithShownAnswer(long chatId, int messageId) {
+        User user = userRepository.findById(chatId).orElseThrow();
+        long numberOfFlashcards = flashcardEducationListRepository.
+                countFlashcardEducationListByFlashcardEducationListPK_User(user);
+        Flashcard currentFlashcard = flashcardEducationListRepository.findById(
+                new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user)).orElseThrow()
+                .getFlashcard();
+
+        EditMessageText messageWithShownAnswer = EditMessageText.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .keyboardRow(List.of(InlineKeyboardButton.builder().text("Idk").callbackData("0%_BUTTON_CLICKED").build(),
+                                             InlineKeyboardButton.builder().text("25%").callbackData("25%_BUTTON_CLICKED").build(),
+                                             InlineKeyboardButton.builder().text("50%").callbackData("50%_BUTTON_CLICKED").build(),
+                                             InlineKeyboardButton.builder().text("75%").callbackData("75%_BUTTON_CLICKED").build(),
+                                             InlineKeyboardButton.builder().text("Easy").callbackData("100%_BUTTON_CLICKED").build()))
+                        .build())
+                .text("Flashcard " + currentFlashcard.getId() + "/" + numberOfFlashcards +
+                        "\n\nQuestion:\n" + currentFlashcard.getQuestion() +
+                        "\n\nAnswer:\n" + currentFlashcard.getAnswer())
+                .build();
+
+        return messageWithShownAnswer;
     }
 }
 
