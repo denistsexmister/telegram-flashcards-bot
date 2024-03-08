@@ -4,10 +4,8 @@ import bot.telegram.flashcards.models.Flashcard;
 import bot.telegram.flashcards.models.FlashcardPackage;
 import bot.telegram.flashcards.models.User;
 import bot.telegram.flashcards.models.temporary.FlashcardEducationList;
-import bot.telegram.flashcards.repository.FlashcardEducationListRepository;
-import bot.telegram.flashcards.repository.FlashcardPackageRepository;
-import bot.telegram.flashcards.repository.FlashcardRepository;
-import bot.telegram.flashcards.repository.UserRepository;
+import bot.telegram.flashcards.models.temporary.FlashcardRepetitionList;
+import bot.telegram.flashcards.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -27,6 +25,7 @@ public class EducationService {
     private final FlashcardPackageRepository flashcardPackageRepository;
     private final UserRepository userRepository;
     private final FlashcardEducationListRepository flashcardEducationListRepository;
+    private final FlashcardRepetitionListRepository flashcardRepetitionListRepository;
 
     public Flashcard getFlashcard(Long id) {
         return flashcardRepository.findFlashcardById(id);
@@ -116,9 +115,9 @@ public class EducationService {
         User user = userRepository.findById(chatId).orElseThrow();
         long numberOfFlashcards = flashcardEducationListRepository.
                 countFlashcardEducationListByFlashcardEducationListPK_User(user);
-        Flashcard currentFlashcard = flashcardEducationListRepository.findById(
-                new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user)).orElseThrow()
-                .getFlashcard();
+        FlashcardEducationList flashcardEducationList = flashcardEducationListRepository.findById(
+                        new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user)).orElseThrow();
+        Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
 
         EditMessageText messageWithShownAnswer = EditMessageText.builder()
                 .chatId(chatId)
@@ -130,12 +129,68 @@ public class EducationService {
                                              InlineKeyboardButton.builder().text("75%").callbackData("75%_BUTTON_CLICKED").build(),
                                              InlineKeyboardButton.builder().text("Easy").callbackData("100%_BUTTON_CLICKED").build()))
                         .build())
-                .text("Flashcard " + currentFlashcard.getId() + "/" + numberOfFlashcards +
+                .text("Flashcard " + flashcardEducationList.getFlashcardEducationListPK().getId()
+                        + "/" + numberOfFlashcards +
                         "\n\nQuestion:\n" + currentFlashcard.getQuestion() +
                         "\n\nAnswer:\n" + currentFlashcard.getAnswer())
                 .build();
 
         return messageWithShownAnswer;
+    }
+
+    public EditMessageText nextRepetitionFlashcard(long chatId, int messageId) {
+        User user = userRepository.findById(chatId).orElseThrow();
+        return nextRepetitionFlashcard(chatId, messageId, user.getCurrentFlashcard());
+    }
+
+    public EditMessageText nextRepetitionFlashcard(long chatId, int messageId, long currentFlashcardId) {
+        User user = userRepository.findById(chatId).orElseThrow();
+
+        user.setCurrentFlashcard(currentFlashcardId + 1);
+        userRepository.save(user);
+
+        long numberOfFlashcards = flashcardRepetitionListRepository.
+                countFlashcardRepetitionListByFlashcardRepetitionListPK_User(user);
+
+        if (user.getCurrentFlashcard() > numberOfFlashcards) {
+            clearTemporaryResourcesAfterEducation(chatId);
+            return createCongratulationMessage(chatId, messageId);
+        }
+
+        FlashcardRepetitionList flashcardRepetitionList = flashcardRepetitionListRepository.findById(
+                new FlashcardRepetitionList.FlashcardRepetitionListPK(user.getCurrentFlashcard(), user)).orElseThrow();
+        Flashcard currentFlashcard = flashcardRepetitionList.getFlashcard();
+
+        EditMessageText editMessage = EditMessageText.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .text("Flashcard (repetition) " +
+                        flashcardRepetitionList.getFlashcardRepetitionListPK().getId() +
+                        "/" + numberOfFlashcards + "\n\nQuestion:\n" + currentFlashcard.getQuestion())
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .keyboardRow(List.of(InlineKeyboardButton.builder()
+                                .callbackData("SHOW_ANSWER_REPETITION_CLICKED").text("Show answer").build())).build())
+                .build();
+
+        return editMessage;
+    }
+
+    public void clearTemporaryResourcesAfterEducation(long chatId) {
+        User user = userRepository.findById(chatId).orElseThrow();
+        flashcardEducationListRepository.deleteAllByFlashcardEducationListPK_User(user);
+        flashcardRepetitionListRepository.deleteAllByFlashcardRepetitionListPK_User(user);
+
+        user.setCurrentFlashcard(null);
+        userRepository.save(user);
+    }
+
+    public EditMessageText createCongratulationMessage(long chatId, int messageId) {
+        return EditMessageText.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .text("CONGRATULATION_MESSAGE")
+                //.replyMarkup() //TODO: Implement button which will restart pack learning class
+                .build();
     }
 
     public EditMessageText nextFlashcard(long chatId, int messageId) {
@@ -146,14 +201,20 @@ public class EducationService {
 
         long numberOfFlashcards = flashcardEducationListRepository.
                 countFlashcardEducationListByFlashcardEducationListPK_User(user);
-        Flashcard currentFlashcard = flashcardEducationListRepository.findById(
-                        new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user)).orElseThrow()
-                .getFlashcard();
+
+        if (user.getCurrentFlashcard() > numberOfFlashcards) {
+            return nextRepetitionFlashcard(chatId, messageId, 0);
+        }
+
+        FlashcardEducationList flashcardEducationList = flashcardEducationListRepository.findById(
+                new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user)).orElseThrow();
+        Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
 
         EditMessageText editMessage = EditMessageText.builder()
                 .chatId(chatId)
                 .messageId(messageId)
-                .text("Flashcard " +currentFlashcard.getId() + "/" + numberOfFlashcards +
+                .text("Flashcard " + flashcardEducationList.getFlashcardEducationListPK().getId()
+                        + "/" + numberOfFlashcards +
                         "\n\nQuestion:\n" + currentFlashcard.getQuestion())
                 .replyMarkup(InlineKeyboardMarkup.builder()
                         .keyboardRow(List.of(InlineKeyboardButton.builder()
@@ -163,8 +224,49 @@ public class EducationService {
         return editMessage;
     }
 
-    public void moveFlashcardToRepetitionList() {
+    public void moveFlashcardToRepetitionList(long chatId) {
+        User user = userRepository.findById(chatId).orElseThrow();
+        Flashcard currentFlashcard = flashcardEducationListRepository.findById(
+                new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user))
+                .orElseThrow().getFlashcard();
+        FlashcardRepetitionList flashcardRepetitionList =
+                new FlashcardRepetitionList(new FlashcardRepetitionList.FlashcardRepetitionListPK(
+                        getAvailableIdForRepetitionList(chatId), user), currentFlashcard);
+        flashcardRepetitionListRepository.save(flashcardRepetitionList);
 
+    }
+
+    private long getAvailableIdForRepetitionList(long chatId) {
+        List<Long> idsList = flashcardRepetitionListRepository.findIds(chatId);
+
+        if (idsList.isEmpty()) {
+            return 1L;
+        } else {
+            return idsList.get(0) + 1;
+        }
+    }
+
+    public EditMessageText changeMsgToMsgWithShownAnswerRepetition(long chatId, int messageId) {
+        User user = userRepository.findById(chatId).orElseThrow();
+        long numberOfFlashcards = flashcardRepetitionListRepository.
+                countFlashcardRepetitionListByFlashcardRepetitionListPK_User(user);
+        FlashcardRepetitionList flashcardRepetitionList = flashcardRepetitionListRepository.findById(
+                new FlashcardRepetitionList.FlashcardRepetitionListPK(user.getCurrentFlashcard(), user)).orElseThrow();
+        Flashcard currentFlashcard = flashcardRepetitionList.getFlashcard();
+
+        EditMessageText messageWithShownAnswer = EditMessageText.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .keyboardRow(List.of(InlineKeyboardButton.builder().text("Next Question").callbackData("NEXT_QUESTION_REPETITION_CLICKED").build()))
+                        .build())
+                .text("Flashcard " + flashcardRepetitionList.getFlashcardRepetitionListPK().getId()
+                        + "/" + numberOfFlashcards +
+                        "\n\nQuestion:\n" + currentFlashcard.getQuestion() +
+                        "\n\nAnswer:\n" + currentFlashcard.getAnswer())
+                .build();
+
+        return messageWithShownAnswer;
     }
 }
 
