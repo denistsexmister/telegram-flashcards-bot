@@ -85,7 +85,7 @@ public class MainController extends TelegramLongPollingBot {
 
                 case "NO_BUTTON_CLICKED" -> educationController.getNoCommandButton(callbackQuery)
                         .forEach(this::executeMessage);
-                case "SHOW_ANSWER" -> executeMessage(educationController.showAnswer(callbackQuery));
+                case "SHOW_ANSWER_CLICKED" -> executeMessage(educationController.showAnswer(callbackQuery));
                 default -> {
                     if (callbackQueryData.matches("FLASHCARD_PACKAGE_\\d+_SELECTED")) {
                         executeMessage(educationController.startEducation(callbackQuery));
