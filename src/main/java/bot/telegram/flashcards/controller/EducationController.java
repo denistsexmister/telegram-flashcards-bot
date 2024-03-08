@@ -4,7 +4,6 @@ import bot.telegram.flashcards.models.FlashcardPackage;
 import bot.telegram.flashcards.service.EducationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -13,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,15 +80,30 @@ public class EducationController {
 
         switch (i) {
             case 0:
+                // create two duplicates of this card and shuffle them in the deck
                 break;
             case 1:
+                // create one duplicate of this card and shuffle it in the deck
                 break;
-            case 2:
-                educationService.moveFlashcardToRepetitionList();
-                return educationService.nextFlashcard(chatId, messageId);
+            case 2:// can be changed to ->
+                educationService.moveFlashcardToRepetitionList(chatId);
         }
 
-        return null;
+        return educationService.nextFlashcard(chatId, messageId);
+    }
+
+    public EditMessageText nextQuestionRepetition(CallbackQuery callbackQuery) {
+        long chatId = callbackQuery.getMessage().getChatId();
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+
+        return educationService.nextRepetitionFlashcard(chatId, messageId);
+    }
+
+    public EditMessageText showAnswerRepetition(CallbackQuery callbackQuery) {
+        long chatId = callbackQuery.getMessage().getChatId();
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+
+        return educationService.changeMsgToMsgWithShownAnswerRepetition(chatId, messageId);
     }
 }
 
