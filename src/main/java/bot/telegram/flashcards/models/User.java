@@ -10,14 +10,6 @@ import java.util.List;
 @Table(name = "account")
 @Data
 public class User {
-    public User() {
-
-    }
-
-    public User(long id) {
-        this.id = id;
-    }
-
     @Id
     @Column
     private long id;
