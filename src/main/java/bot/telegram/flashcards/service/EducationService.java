@@ -137,5 +137,34 @@ public class EducationService {
 
         return messageWithShownAnswer;
     }
+
+    public EditMessageText nextFlashcard(long chatId, int messageId) {
+        User user = userRepository.findById(chatId).orElseThrow();
+
+        user.setCurrentFlashcard(user.getCurrentFlashcard() + 1);
+        userRepository.save(user);
+
+        long numberOfFlashcards = flashcardEducationListRepository.
+                countFlashcardEducationListByFlashcardEducationListPK_User(user);
+        Flashcard currentFlashcard = flashcardEducationListRepository.findById(
+                        new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user)).orElseThrow()
+                .getFlashcard();
+
+        EditMessageText editMessage = EditMessageText.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .text("Flashcard " +currentFlashcard.getId() + "/" + numberOfFlashcards +
+                        "\n\nQuestion:\n" + currentFlashcard.getQuestion())
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .keyboardRow(List.of(InlineKeyboardButton.builder()
+                                .callbackData("SHOW_ANSWER_CLICKED").text("Show answer").build())).build())
+                .build();
+
+        return editMessage;
+    }
+
+    public void moveFlashcardToRepetitionList() {
+
+    }
 }
 
