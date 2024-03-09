@@ -7,6 +7,7 @@ import bot.telegram.flashcards.models.temporary.FlashcardEducationList;
 import bot.telegram.flashcards.models.temporary.FlashcardRepetitionList;
 import bot.telegram.flashcards.repository.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class EducationService {
     private final FlashcardRepository flashcardRepository;
     private final FlashcardPackageRepository flashcardPackageRepository;
@@ -29,7 +31,6 @@ public class EducationService {
     private final FlashcardEducationListRepository flashcardEducationListRepository;
     private final FlashcardRepetitionListRepository flashcardRepetitionListRepository;
 
-    private static final Logger log = LoggerFactory.getLogger(EducationService.class);
 
     public FlashcardPackage getFlashcardPackage(long packageId) throws NoSuchElementException {
         return flashcardPackageRepository.findById(packageId).orElseThrow();

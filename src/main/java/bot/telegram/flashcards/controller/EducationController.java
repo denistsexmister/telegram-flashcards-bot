@@ -4,6 +4,7 @@ import bot.telegram.flashcards.misc.FlashcardAnswerStatus;
 import bot.telegram.flashcards.models.FlashcardPackage;
 import bot.telegram.flashcards.service.EducationService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,11 +21,11 @@ import java.util.List;
 
 @Controller
 @AllArgsConstructor
+@Slf4j
 public class EducationController {
 
     private final EducationService educationService;
 
-    private static final Logger log = LoggerFactory.getLogger(EducationController.class);
 
     public SendMessage startEducationCommandReceived(Update update) {
         try {
