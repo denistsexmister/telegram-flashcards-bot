@@ -1,5 +1,6 @@
 package bot.telegram.flashcards.controller;
 
+import bot.telegram.flashcards.misc.FlashcardAnswerStatus;
 import bot.telegram.flashcards.models.FlashcardPackage;
 import bot.telegram.flashcards.service.EducationService;
 import lombok.AllArgsConstructor;
@@ -71,18 +72,18 @@ public class EducationController {
         return educationService.changeMsgToMsgWithShownAnswer(chatId, messageId);
     }
 
-    public EditMessageText answerButtonClicked(CallbackQuery callbackQuery, int i) {
+    public EditMessageText answerButtonClicked(CallbackQuery callbackQuery, FlashcardAnswerStatus answerStatus) {
         long chatId = callbackQuery.getMessage().getChatId();
         int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
 
-        switch (i) {
-            case 0:
+        switch (answerStatus) {
+            case HARDEST:
                 // create two duplicates of this card and shuffle them in the deck
                 break;
-            case 1:
+            case HARD:
                 // create one duplicate of this card and shuffle it in the deck
                 break;
-            case 2:// can be changed to ->
+            case EASY:// can be changed to ->
                 educationService.moveFlashcardToRepetitionList(chatId);
         }
 

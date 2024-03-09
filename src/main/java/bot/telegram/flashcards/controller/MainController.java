@@ -1,6 +1,7 @@
 package bot.telegram.flashcards.controller;
 
 
+import bot.telegram.flashcards.misc.FlashcardAnswerStatus;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -80,9 +81,9 @@ public class MainController extends TelegramLongPollingBot {
                 case "GET_GUIDE_BUTTON_CLICKED" -> startController.getGuideButtonClicked(callbackQuery)
                         .forEach(this::executeMessage);
                 case "SHOW_ANSWER_CLICKED" -> executeMessage(educationController.showAnswer(callbackQuery));
-                case "0%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, 0));
-                case "25%_BUTTON_CLICKED", "50%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, 1));
-                case "75%_BUTTON_CLICKED", "100%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, 2));
+                case "0%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, FlashcardAnswerStatus.HARDEST));
+                case "25%_BUTTON_CLICKED", "50%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, FlashcardAnswerStatus.HARD));
+                case "75%_BUTTON_CLICKED", "100%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, FlashcardAnswerStatus.EASY));
                 case "SHOW_ANSWER_REPETITION_CLICKED" -> executeMessage(educationController.showAnswerRepetition(callbackQuery));
                 case "NEXT_QUESTION_REPETITION_CLICKED" -> executeMessage(educationController.nextQuestionRepetition(callbackQuery));
                 default -> {
