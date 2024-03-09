@@ -3,6 +3,7 @@ package bot.telegram.flashcards.service;
 import bot.telegram.flashcards.models.User;
 import bot.telegram.flashcards.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,9 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class StartService {
     private final UserRepository userRepository;
-
-    private static final Logger log = LoggerFactory.getLogger(StartService.class);
 
     public boolean addUserIfNotInRepo(long chatId) {
         try {

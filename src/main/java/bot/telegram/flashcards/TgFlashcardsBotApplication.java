@@ -13,7 +13,7 @@ public class TgFlashcardsBotApplication {
     public static void main(String[] args) {
         SpringApplication.run(TgFlashcardsBotApplication.class, args);
 
-        log.warn("Bot started");
+        log.info("Bot started");
     }
 
 }

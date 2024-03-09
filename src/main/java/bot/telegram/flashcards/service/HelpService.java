@@ -1,14 +1,15 @@
 package bot.telegram.flashcards.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Service
+@Slf4j
 public class HelpService {
 
-    private static final Logger log = LoggerFactory.getLogger(HelpService.class);
     public SendMessage createHelpMessage(long chatId) {
         try {
             return SendMessage.builder()
