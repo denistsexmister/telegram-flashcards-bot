@@ -23,7 +23,7 @@ public class StartService {
         try {
             boolean didUserExistInRepo = userRepository.existsById(chatId);
             if (!didUserExistInRepo) {
-                userRepository.save(new User(chatId));
+                userRepository.save(User.builder().id(chatId).build());
             }
 
             return didUserExistInRepo;

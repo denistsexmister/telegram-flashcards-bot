@@ -11,7 +11,6 @@ public class HelpService {
     private static final Logger log = LoggerFactory.getLogger(HelpService.class);
     public SendMessage createHelpMessage(long chatId) {
         try {
-
             return SendMessage.builder()
                     .chatId(chatId)
                     .text("HELP_MESSAGE")

@@ -1,6 +1,7 @@
 package bot.telegram.flashcards.models;
 
 import bot.telegram.flashcards.models.temporary.FlashcardEducationList;
+import bot.telegram.flashcards.models.temporary.FlashcardRepetitionList;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,9 @@ public class Flashcard {
 
     @OneToOne(mappedBy = "flashcard")
     private FlashcardEducationList flashcardEducationList;
+
+    @OneToOne(mappedBy = "flashcard")
+    private FlashcardRepetitionList flashcardRepetitionList;
 
     @Column
     private String question;

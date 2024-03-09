@@ -54,18 +54,6 @@ public class EducationController {
             log.error("Error: cannot start education command received", e);
             return null;
         }
-
-//        FlashcardPackage flashcardPackage = educationService.getFlashcardPackage(1);
-
-
-    }
-
-    public List<SendMessage> getYesCommandButton(CallbackQuery callbackQuery) {
-        return List.of(educationService.createYesButton(callbackQuery.getMessage().getChatId()));
-    }
-
-    public List<SendMessage> getNoCommandButton(CallbackQuery callbackQuery) {
-        return List.of(educationService.createNoButton(callbackQuery.getMessage().getChatId()));
     }
 
     public EditMessageText startEducation(CallbackQuery callbackQuery) {
@@ -77,7 +65,42 @@ public class EducationController {
     }
 
     public EditMessageText showAnswer(CallbackQuery callbackQuery) {
-        return null;
+        long chatId = callbackQuery.getMessage().getChatId();
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+
+        return educationService.changeMsgToMsgWithShownAnswer(chatId, messageId);
+    }
+
+    public EditMessageText answerButtonClicked(CallbackQuery callbackQuery, int i) {
+        long chatId = callbackQuery.getMessage().getChatId();
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+
+        switch (i) {
+            case 0:
+                // create two duplicates of this card and shuffle them in the deck
+                break;
+            case 1:
+                // create one duplicate of this card and shuffle it in the deck
+                break;
+            case 2:// can be changed to ->
+                educationService.moveFlashcardToRepetitionList(chatId);
+        }
+
+        return educationService.nextFlashcard(chatId, messageId);
+    }
+
+    public EditMessageText nextQuestionRepetition(CallbackQuery callbackQuery) {
+        long chatId = callbackQuery.getMessage().getChatId();
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+
+        return educationService.nextRepetitionFlashcard(chatId, messageId);
+    }
+
+    public EditMessageText showAnswerRepetition(CallbackQuery callbackQuery) {
+        long chatId = callbackQuery.getMessage().getChatId();
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+
+        return educationService.changeMsgToMsgWithShownAnswerRepetition(chatId, messageId);
     }
 }
 
