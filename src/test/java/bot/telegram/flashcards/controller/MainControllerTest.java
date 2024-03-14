@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Slf4j
+
 class MainControllerTest {
 
     private static BotConfig config;
