@@ -1,20 +1,18 @@
 package bot.telegram.flashcards.controller;
 
 import bot.telegram.flashcards.config.BotConfig;
-import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.*;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 
 class MainControllerTest {
 
     private static BotConfig config;
 
-    private static SendMessage message;
 
     @BeforeAll
     static void setUp() {
