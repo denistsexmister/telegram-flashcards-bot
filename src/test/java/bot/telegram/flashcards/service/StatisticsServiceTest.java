@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 @ExtendWith(MockitoExtension.class)
 class StatisticsServiceTest {
 
@@ -38,5 +40,6 @@ class StatisticsServiceTest {
 
     @Test
     void should_create_month_statistics_by_all_decks_message() {
+        assertThat(statisticsService.createMonthStatisticsByAllDecksMessage(1L)).isNotNull();
     }
 }

@@ -16,6 +16,7 @@ public class FlashcardsService {
 //    make method getFlashcardIdsByFlashcardsId for find from FlashcardsRepository Flashcard's ID
 
     public List<Long> getFlashcardIdsByFlashcardsId(Long flashcardsId) {
+        //TODO: this method show NullPointerException if flashcardsId == null, even if we have flashcardsId in test
         FlashcardPackage flashcards = flashcardsRepository.findById(flashcardsId).orElse(null).getFlashcardPackage();
         List<Long> flashcardIds = new ArrayList<>();
 

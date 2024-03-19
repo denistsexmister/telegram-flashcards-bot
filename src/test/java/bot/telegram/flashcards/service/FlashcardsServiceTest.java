@@ -12,12 +12,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Objects;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
 class FlashcardsServiceTest {
 
@@ -42,5 +36,6 @@ class FlashcardsServiceTest {
     @Test
     @DisplayName("It should get flashcard ids by flashcards id")
     void should_get_flashcard_ids_by_flashcards_id() {
+        Assertions.assertThat(flashcardsService.getFlashcardIdsByFlashcardsId(1L)).isNotNull();
     }
 }

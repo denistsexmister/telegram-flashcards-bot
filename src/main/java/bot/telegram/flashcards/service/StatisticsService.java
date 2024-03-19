@@ -18,6 +18,7 @@ public class StatisticsService {
     public SendMessage createMonthStatisticsByAllDecksMessage(long chatId) {
         List<FlashcardsStatistics> statisticsList =
                 statisticsRepository.findFlashcardsStatisticsByFlashcardPackage(
+                        //TODO: show NullPointerException in test
                         userRepository.findById(chatId).orElse(null).getFlashcardPackageList().get(0));// TODO: change to something more adequate
 
         long failedCards, hardCards, studiedCards;

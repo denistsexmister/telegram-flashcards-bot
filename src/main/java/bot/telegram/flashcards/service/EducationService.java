@@ -33,6 +33,7 @@ public class EducationService {
 
 
     public FlashcardPackage getFlashcardPackage(long packageId) throws NoSuchElementException {
+// TODO: add ifPresent() or isPresent() for this code, 'cause tests show NoSuchElementException
         return flashcardPackageRepository.findById(packageId).orElseThrow();
     }
 
