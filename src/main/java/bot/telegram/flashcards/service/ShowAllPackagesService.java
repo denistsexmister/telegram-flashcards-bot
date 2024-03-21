@@ -5,9 +5,13 @@ import bot.telegram.flashcards.repository.ShowAllPackagesRepository;
 import bot.telegram.flashcards.repository.FlashcardPackageRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -15,8 +19,26 @@ public class ShowAllPackagesService {
 
     private ShowAllPackagesRepository showAllPackagesRepository;
 
-    public List<FlashcardPackage> showAllPackages(Long chatId) throws NoSuchElementException {
+    public List<FlashcardPackage> getAllPackages(Long chatId) throws NoSuchElementException {
         return (List<FlashcardPackage>) showAllPackagesRepository.findAll();
+    }
+
+    public EditMessageText showAllPackages(Long chatId, int messageId) {
+        List<FlashcardPackage> flashcardPackageList = getAllPackages(chatId);
+
+        EditMessageText editMessage = EditMessageText.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .text("Choose package:")
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .keyboard(flashcardPackageList
+                        .stream()
+                        .map(flashcardPackage -> List.of(InlineKeyboardButton.builder()
+                                .callbackData(String.valueOf(flashcardPackage.getId()))
+                                .text(flashcardPackage.getTitle()).build())).collect(Collectors.toList())).build())
+                                .build();
+
+        return editMessage;
     }
 
 }

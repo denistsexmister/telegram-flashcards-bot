@@ -4,6 +4,9 @@ import bot.telegram.flashcards.service.ShowAllPackagesService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Controller
@@ -11,13 +14,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class ShowAllPackagesController {
     private ShowAllPackagesService showAllPackagesService;
 
-    public SendMessage showAllPackagesCommandReceived(Update update) {
-        String flashcardPackages = showAllPackagesService.showAllPackages(update.getMessage().getChatId()).toString();
+    public EditMessageText showAllPackagesCommandReceived(CallbackQuery callbackQuery) {
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+        long chatId = callbackQuery.getMessage().getChatId();
 
-        SendMessage message = new SendMessage();
-        message.setChatId(update.getMessage().getChatId().toString());
-
-        return message;
+        return showAllPackagesService.showAllPackages(chatId, messageId);
     }
 
 }
