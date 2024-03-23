@@ -1,11 +1,10 @@
 package bot.telegram.flashcards.service;
 
 import bot.telegram.flashcards.models.FlashcardPackage;
-import bot.telegram.flashcards.repository.ShowAllPackagesRepository;
 import bot.telegram.flashcards.repository.FlashcardPackageRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -17,26 +16,27 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ShowAllPackagesService {
 
-    private ShowAllPackagesRepository showAllPackagesRepository;
+    private FlashcardPackageRepository flashcardPackageRepository;
 
     public List<FlashcardPackage> getListOfPackages(Long chatId) throws NoSuchElementException {
-        return (List<FlashcardPackage>) showAllPackagesRepository.findAll();
+        return (List<FlashcardPackage>) flashcardPackageRepository.findAll();
     }
 
-    public EditMessageText getAllPackages(Long chatId, int messageId) {
+    public SendMessage getAllPackages(Long chatId) {
         List<FlashcardPackage> flashcardPackageList = getListOfPackages(chatId);
 
-        return EditMessageText.builder()
+        return SendMessage.builder()
                 .chatId(chatId)
-                .messageId(messageId)
                 .text("Choose package:")
                 .replyMarkup(InlineKeyboardMarkup.builder()
                         .keyboard(flashcardPackageList
                         .stream()
                         .map(flashcardPackage -> List.of(InlineKeyboardButton.builder()
+//                                TODO: make like startEducationCommandReceived(EducationController)
                                 .callbackData(String.valueOf(flashcardPackage.getId()))
                                 .text(flashcardPackage.getTitle()).build())).collect(Collectors.toList())).build())
                                 .build();
     }
+
 
 }
