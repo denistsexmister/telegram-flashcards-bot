@@ -201,10 +201,12 @@ public class EducationService {
         Flashcard currentFlashcard = flashcardEducationListRepository.findById(
                 new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user))
                 .orElseThrow().getFlashcard();
-        FlashcardRepetitionList flashcardRepetitionList =
-                new FlashcardRepetitionList(new FlashcardRepetitionList.FlashcardRepetitionListPK(
-                        getAvailableIdForRepetitionList(chatId), user), currentFlashcard);
-        flashcardRepetitionListRepository.save(flashcardRepetitionList);
+        if (flashcardRepetitionListRepository.findAllByFlashcard(currentFlashcard).isEmpty()) {
+            FlashcardRepetitionList flashcardRepetitionList =
+                    new FlashcardRepetitionList(new FlashcardRepetitionList.FlashcardRepetitionListPK(
+                            getAvailableIdForRepetitionList(chatId), user), currentFlashcard);
+            flashcardRepetitionListRepository.save(flashcardRepetitionList);
+        }
     }
 
     private long getAvailableIdForRepetitionList(long chatId) {
@@ -238,6 +240,57 @@ public class EducationService {
                 .build();
 
         return messageWithShownAnswer;
+    }
+
+    public void duplicateFlashcard(long chatId, int numberOfDuplicates) {
+        User user = userRepository.findById(chatId).orElseThrow();
+        FlashcardEducationList flashcardEducationList = flashcardEducationListRepository.findById(
+                        new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user))
+                .orElseThrow();
+        Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
+
+        long numberOfAllFlashcardsInDeck =
+                flashcardEducationListRepository.countFlashcardEducationListByFlashcardEducationListPK_User(
+                        user);
+        long currentFlashcardId = flashcardEducationList.getFlashcardEducationListPK().getId();
+
+        double divider = 1.0 / (numberOfDuplicates + 1);
+
+
+        for (int i = 0; i < numberOfDuplicates; i++) {
+            long numberOfFlashcardsAhead = numberOfAllFlashcardsInDeck - currentFlashcardId;
+            long flashcardStep = (long) (numberOfFlashcardsAhead * divider) + 1; // because of "+ 1" newCoord can be out of range
+            long newCoord = currentFlashcardId + flashcardStep * (i + 1);
+
+            if (newCoord > numberOfAllFlashcardsInDeck) {
+
+            }
+
+            FlashcardEducationList savedFlashcardEducationList = flashcardEducationListRepository
+                    .findById(new FlashcardEducationList.FlashcardEducationListPK(
+                            newCoord, user)).orElseThrow();
+
+            flashcardEducationListRepository.save(
+                    new FlashcardEducationList(new FlashcardEducationList.FlashcardEducationListPK(
+                            newCoord, user), currentFlashcard));
+            newCoord++;
+            FlashcardEducationList nextFlashcard;
+            while (newCoord <= numberOfAllFlashcardsInDeck) {
+                nextFlashcard = flashcardEducationListRepository.findById(new FlashcardEducationList.FlashcardEducationListPK(newCoord, user)).orElseThrow();
+                savedFlashcardEducationList.setFlashcardEducationListPK(
+                        new FlashcardEducationList.FlashcardEducationListPK(
+                                nextFlashcard.getFlashcardEducationListPK().getId(), user));
+                flashcardEducationListRepository.save(savedFlashcardEducationList);
+                savedFlashcardEducationList = nextFlashcard;
+                newCoord++;
+            }
+
+            savedFlashcardEducationList.setFlashcardEducationListPK(
+                    new FlashcardEducationList.FlashcardEducationListPK(
+                            newCoord, user));
+            flashcardEducationListRepository.save(savedFlashcardEducationList);
+            numberOfAllFlashcardsInDeck++;
+        }
     }
 }
 
