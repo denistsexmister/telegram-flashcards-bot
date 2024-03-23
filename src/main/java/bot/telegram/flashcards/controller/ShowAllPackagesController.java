@@ -18,7 +18,7 @@ public class ShowAllPackagesController {
     }
 
 //    TODO: make method, which will show description of chosen package, example startEducation(EducationController)
-// Check git commit --amend
+
 
 
 }
