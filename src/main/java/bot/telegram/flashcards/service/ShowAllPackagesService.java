@@ -19,14 +19,14 @@ public class ShowAllPackagesService {
 
     private ShowAllPackagesRepository showAllPackagesRepository;
 
-    public List<FlashcardPackage> getAllPackages(Long chatId) throws NoSuchElementException {
+    public List<FlashcardPackage> getListOfPackages(Long chatId) throws NoSuchElementException {
         return (List<FlashcardPackage>) showAllPackagesRepository.findAll();
     }
 
-    public EditMessageText showAllPackages(Long chatId, int messageId) {
-        List<FlashcardPackage> flashcardPackageList = getAllPackages(chatId);
+    public EditMessageText getAllPackages(Long chatId, int messageId) {
+        List<FlashcardPackage> flashcardPackageList = getListOfPackages(chatId);
 
-        EditMessageText editMessage = EditMessageText.builder()
+        return EditMessageText.builder()
                 .chatId(chatId)
                 .messageId(messageId)
                 .text("Choose package:")
@@ -37,8 +37,6 @@ public class ShowAllPackagesService {
                                 .callbackData(String.valueOf(flashcardPackage.getId()))
                                 .text(flashcardPackage.getTitle()).build())).collect(Collectors.toList())).build())
                                 .build();
-
-        return editMessage;
     }
 
 }

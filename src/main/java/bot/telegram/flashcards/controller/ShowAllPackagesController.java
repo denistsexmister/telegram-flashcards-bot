@@ -14,11 +14,18 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class ShowAllPackagesController {
     private ShowAllPackagesService showAllPackagesService;
 
-    public EditMessageText showAllPackagesCommandReceived(CallbackQuery callbackQuery) {
+    public EditMessageText showAllPackages(CallbackQuery callbackQuery) {
         int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
         long chatId = callbackQuery.getMessage().getChatId();
 
-        return showAllPackagesService.showAllPackages(chatId, messageId);
+        return showAllPackagesService.getAllPackages(chatId, messageId);
     }
+
+//    public SendMessage showAllPackagesCommandReceived(Update update){
+//
+//        long chatId = update.getCallbackQuery().getMessage().getChatId();
+//        int messageId = update.getCallbackQuery().getMessage().getMessageId();
+//        return showAllPackagesService.getAllPackages(chatId, messageId);
+//    }
 
 }
