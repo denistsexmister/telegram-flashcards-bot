@@ -5,6 +5,8 @@ import bot.telegram.flashcards.models.temporary.FlashcardRepetitionList;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -19,8 +21,8 @@ public class Flashcard {
     @JoinColumn(name = "packageId", referencedColumnName = "id")
     private FlashcardPackage flashcardPackage;
 
-    @OneToOne(mappedBy = "flashcard")
-    private FlashcardEducationList flashcardEducationList;
+    @OneToMany(mappedBy = "flashcard")
+    private List<FlashcardEducationList> flashcardEducationList;
 
     @OneToOne(mappedBy = "flashcard")
     private FlashcardRepetitionList flashcardRepetitionList;

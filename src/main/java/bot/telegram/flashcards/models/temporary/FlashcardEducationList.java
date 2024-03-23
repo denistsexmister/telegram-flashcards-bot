@@ -17,7 +17,7 @@ public class FlashcardEducationList {
     @EmbeddedId
     private FlashcardEducationListPK flashcardEducationListPK;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "flashcardId")
     private Flashcard flashcard;
 
