@@ -17,6 +17,9 @@ public class FlashcardPackage {
     @Column
     private String title;
 
+    @Column
+    private String description;
+
     @OneToMany(mappedBy = "flashcardPackage", fetch = FetchType.EAGER)
     private List<Flashcard> flashcardList;
 

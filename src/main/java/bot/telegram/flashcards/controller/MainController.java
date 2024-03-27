@@ -93,9 +93,11 @@ public class MainController extends TelegramLongPollingBot {
                 default -> {
                     if (callbackQueryData.matches("FLASHCARD_PACKAGE_\\d+_SELECTED")) {
                         executeMessage(educationController.startEducation(callbackQuery));
-                    } else if (callbackQueryData.matches("FLASHCARD_PACKAGE_\\d+_EDITED")) {
+                    } else if (callbackQueryData.matches("SHOW_ALL_PACKAGES_\\d+_SELECTED")) {
 //                        TODO:make
                         executeMessage(showAllPackagesController.showPackageDescription(callbackQuery));
+                    } else if (callbackQueryData.matches("SHOW_ALL_CARDS_OF_PACKAGE")) {
+//                        executeMessage(educationController.showAllCardsOfPackage(callbackQuery));
                     }
                 }
             }
