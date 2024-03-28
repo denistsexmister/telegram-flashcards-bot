@@ -1,5 +1,6 @@
 package bot.telegram.flashcards.service;
 
+import bot.telegram.flashcards.controller.EducationController;
 import bot.telegram.flashcards.models.FlashcardPackage;
 import bot.telegram.flashcards.repository.FlashcardPackageRepository;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class ShowAllPackagesService {
 
     private FlashcardPackageRepository flashcardPackageRepository;
+    private EducationController educationController;
 
     public List<FlashcardPackage> getListOfPackages(Long chatId) throws NoSuchElementException {
         return (List<FlashcardPackage>) flashcardPackageRepository.findAll();
@@ -34,7 +36,6 @@ public class ShowAllPackagesService {
                         .keyboard(flashcardPackageList
                         .stream()
                         .map(flashcardPackage -> List.of(InlineKeyboardButton.builder()
-//                                TODO: make like startEducationCommandReceived(EducationController)
                                 .callbackData("SHOW_ALL_PACKAGES_%d_SELECTED".formatted(flashcardPackage.getId()))
                                 .text(flashcardPackage.getTitle()).build())).collect(Collectors.toList())).build())
                                 .build();
@@ -47,15 +48,16 @@ public class ShowAllPackagesService {
 //         Create the first row of buttons
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
         firstRow.add(InlineKeyboardButton.builder()
-                .callbackData("SHOW_ALL_CARDS_OF_PACKAGE".formatted(flashcardPackageId))
-                .text("Show all cards")
+                .callbackData("FLASHCARD_PACKAGE_%d_SELECTED".formatted(flashcardPackageId))
+                .text("Start education")
                 .build());
+
 //
 // Create the second row of buttons
         List<InlineKeyboardButton> secondRow = new ArrayList<>();
         secondRow.add(InlineKeyboardButton.builder()
-                .callbackData("START_EDUCATION".formatted(flashcardPackageId))
-                .text("Start education")
+                .callbackData("SHOW_ALL_CARDS_OF_PACKAGE_%d_SELECTED".formatted(flashcardPackageId))
+                .text("Show all cards")
                 .build());
 //
 // Create the InlineKeyboardMarkup with the rows of buttons
