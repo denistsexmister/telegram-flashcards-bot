@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class ShowAllPackagesService {
 
     private FlashcardPackageRepository flashcardPackageRepository;
-    private EducationController educationController;
 
     public List<FlashcardPackage> getListOfPackages(Long chatId) throws NoSuchElementException {
         return (List<FlashcardPackage>) flashcardPackageRepository.findAll();

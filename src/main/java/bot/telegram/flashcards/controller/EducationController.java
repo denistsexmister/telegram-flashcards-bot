@@ -104,5 +104,9 @@ public class EducationController {
 
         return educationService.changeMsgToMsgWithShownAnswerRepetition(chatId, messageId);
     }
+
+    public EditMessageText showAllCardsOfPackage(CallbackQuery callbackQuery){
+
+    }
 }
 
