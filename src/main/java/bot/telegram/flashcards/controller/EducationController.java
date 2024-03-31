@@ -106,7 +106,7 @@ public class EducationController {
     }
 
     public EditMessageText showAllCardsOfPackage(CallbackQuery callbackQuery){
-
+        return null;
     }
 }
 
