@@ -15,17 +15,9 @@ public class ShowAllPackagesController {
     private ShowAllPackagesService showAllPackagesService;
 
     public SendMessage showAllPackagesCommandReceived(Update update){
-//        TODO: change if-else construction to normal conditions
-        if(update.hasCallbackQuery() && update.getCallbackQuery().getData().equals("SHOW_ALL_PACKAGES")) {
-            long chatId = update.getCallbackQuery().getMessage().getChatId();
-            return showAllPackagesService.getAllPackages(chatId);
-        } else {
-            long chatId = update.getMessage().getChatId();
-            return showAllPackagesService.getAllPackages(chatId);
-        }
+        long chatId = update.getMessage().getChatId();
+        return showAllPackagesService.getAllPackages(chatId);
     }
-
-
     public EditMessageText showPackageDescription(CallbackQuery callbackQuery) {
         long flashcardPackageId = Long.parseLong(callbackQuery.getData().split("_")[3]);
         int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
@@ -33,5 +25,4 @@ public class ShowAllPackagesController {
 
         return showAllPackagesService.getPackage(flashcardPackageId ,messageId, chatId);
     }
-
 }
