@@ -48,21 +48,6 @@ public class EducationService {
         }
     }
 
-    public List<Flashcard> getFlashcardListByPackageId(long packageId) throws NoSuchElementException {
-        try {
-            FlashcardPackage flashcardPackage = flashcardPackageRepository.findById(packageId).orElseThrow();
-            return flashcardPackage.getFlashcardList();
-        }catch (Exception e){
-            log.error("Cannot get flashcard list", e);
-            return List.of();
-        }
-    }
-
-//    public EditMessageText getAllCardsOfPackage(long packageId, long chatId, int messageId) {
-//            List<Flashcard>  flashcardList = getFlashcardListByPackageId(packageId);
-//            return getAllCardsOfPackage(flashcardList,chatId, messageId);
-//    }
-
     public EditMessageText generateFlashcardList(long flashcardPackageId, long chatId, int messageId) {
         try {
             FlashcardPackage flashcardPackage = flashcardPackageRepository.findById(flashcardPackageId).orElseThrow();

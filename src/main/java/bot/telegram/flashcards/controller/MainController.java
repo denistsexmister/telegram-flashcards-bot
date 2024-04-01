@@ -96,7 +96,7 @@ public class MainController extends TelegramLongPollingBot {
                     } else if (callbackQueryData.matches("SHOW_ALL_PACKAGES_\\d+_SELECTED")) {
                         executeMessage(showAllPackagesController.showPackageDescription(callbackQuery));
                     } else if (callbackQueryData.matches("SHOW_ALL_CARDS_OF_PACKAGE_\\d+_SELECTED")) {
-//                        executeMessage(educationController.showAllCardsOfPackage(callbackQuery));
+                        executeMessage(showAllPackagesController.showAllCards(callbackQuery));
                     }
                 }
             }

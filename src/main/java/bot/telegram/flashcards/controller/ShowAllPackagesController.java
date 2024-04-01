@@ -25,4 +25,12 @@ public class ShowAllPackagesController {
 
         return showAllPackagesService.getPackage(flashcardPackageId ,messageId, chatId);
     }
+
+    public EditMessageText showAllCards(CallbackQuery callbackQuery) {
+        long flashcardId = Long.parseLong(callbackQuery.getData().split("_")[5]);
+        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+        long chatId = callbackQuery.getMessage().getChatId();
+
+        return showAllPackagesService.showCardOfPackage(flashcardId, messageId, chatId);
+    }
 }

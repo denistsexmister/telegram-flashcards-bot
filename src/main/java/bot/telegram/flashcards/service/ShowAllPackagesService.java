@@ -1,8 +1,10 @@
 package bot.telegram.flashcards.service;
 
 import bot.telegram.flashcards.controller.EducationController;
+import bot.telegram.flashcards.models.Flashcard;
 import bot.telegram.flashcards.models.FlashcardPackage;
 import bot.telegram.flashcards.repository.FlashcardPackageRepository;
+import bot.telegram.flashcards.repository.FlashcardRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class ShowAllPackagesService {
 
     private FlashcardPackageRepository flashcardPackageRepository;
+    private FlashcardRepository flashcardRepository;
 
     public List<FlashcardPackage> getListOfPackages(Long chatId) throws NoSuchElementException {
         return (List<FlashcardPackage>) flashcardPackageRepository.findAll();
@@ -67,6 +70,34 @@ public class ShowAllPackagesService {
                         flashcardPackage.getFlashcardList().size(),
                         flashcardPackage.getDescription()))
                 .replyMarkup(replyMarkup)
+                .build();
+    }
+
+
+    public Flashcard getCardOfPackage(long flashcardId) throws NoSuchElementException {
+        return flashcardRepository.findById(flashcardId).orElseThrow();
+    }
+
+    public EditMessageText showCardOfPackage(long flashcardId, int messageId, long chatId) {
+        Flashcard flashcard = getCardOfPackage(flashcardId);
+
+        //todo: make buttons previous and next work with flashcards
+        return EditMessageText.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .text(String.format("Card: %d \n\nQuestion:\n%s\n\nAnswer:\n%s",
+                        flashcard.getId(),
+                        flashcard.getQuestion(),
+                        flashcard.getAnswer()))
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .keyboardRow(List.of(InlineKeyboardButton.builder()
+                                .text("Previous")
+                                .callbackData("PREVIOUS_CARD_CLICKED").build(),
+                                InlineKeyboardButton.builder()
+                                .text("Next")
+                                .callbackData("NEXT_CARD_CLICKED")
+                                .build()))
+                        .build())
                 .build();
     }
 
