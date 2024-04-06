@@ -5,20 +5,17 @@ import bot.telegram.flashcards.models.FlashcardPackage;
 import bot.telegram.flashcards.models.User;
 import bot.telegram.flashcards.models.temporary.FlashcardEducationList;
 import bot.telegram.flashcards.models.temporary.FlashcardRepetitionList;
+import bot.telegram.flashcards.models.temporary.FlashcardStatus;
 import bot.telegram.flashcards.repository.*;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -28,6 +25,7 @@ public class EducationService {
     private final UserRepository userRepository;
     private final FlashcardEducationListRepository flashcardEducationListRepository;
     private final FlashcardRepetitionListRepository flashcardRepetitionListRepository;
+    private final FlashcardStatusRepository flashcardStatusRepository;
 
     private static final Logger log = LoggerFactory.getLogger(EducationService.class);
 
@@ -151,6 +149,7 @@ public class EducationService {
         User user = userRepository.findById(chatId).orElseThrow();
         flashcardEducationListRepository.deleteAllByFlashcardEducationListPK_User(user);
         flashcardRepetitionListRepository.deleteAllByFlashcardRepetitionListPK_User(user);
+        flashcardStatusRepository.deleteAllByFlashcardStatusPK_User(user);
 
         user.setCurrentFlashcard(null);
         userRepository.save(user);
@@ -249,6 +248,31 @@ public class EducationService {
                 .orElseThrow();
         Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
 
+        Optional<FlashcardStatus> flashcardStatusOptional = flashcardStatusRepository
+                .findById(new FlashcardStatus.FlashcardStatusPK(user, currentFlashcard)); // TODO: repair problem https://stackoverflow.com/questions/76887311/listresultsconsumer-duplicate-row-was-found-and-assert-was-specified
+        if (flashcardStatusOptional.isEmpty()){
+            flashcardStatusRepository.save(new FlashcardStatus(
+                    new FlashcardStatus.FlashcardStatusPK(user, currentFlashcard),
+                    numberOfDuplicates,
+                    null)); // TODO: set to appropriate difficulty
+        } else {
+            FlashcardStatus flashcardStatus = flashcardStatusOptional.get();
+            flashcardStatus.setNumberOfDuplicatedCards(flashcardStatus.getNumberOfDuplicatedCards() - 1);
+
+            if (numberOfDuplicates >= flashcardStatus.getNumberOfDuplicatedCards()) {
+                int difference = numberOfDuplicates - flashcardStatus.getNumberOfDuplicatedCards();
+
+                numberOfDuplicates -= flashcardStatus.getNumberOfDuplicatedCards();
+
+                flashcardStatus.setNumberOfDuplicatedCards(flashcardStatus.getNumberOfDuplicatedCards() + difference);
+                flashcardStatusRepository.save(flashcardStatus);
+            }
+        }
+
+        if (numberOfDuplicates <= 0) {
+            return;
+        }
+
         long numberOfAllFlashcardsInDeck =
                 flashcardEducationListRepository.countFlashcardEducationListByFlashcardEducationListPK_User(
                         user);
@@ -262,34 +286,54 @@ public class EducationService {
             long flashcardStep = (long) (numberOfFlashcardsAhead * divider) + 1; // because of "+ 1" newCoord can be out of range
             long newCoord = currentFlashcardId + flashcardStep * (i + 1);
 
-            if (newCoord > numberOfAllFlashcardsInDeck) {
+            if (newCoord >= numberOfAllFlashcardsInDeck) {
+                flashcardEducationListRepository.save(new FlashcardEducationList(
+                        new FlashcardEducationList.FlashcardEducationListPK(
+                                numberOfAllFlashcardsInDeck + 1, user),
+                        currentFlashcard));
+            } else {
+                FlashcardEducationList savedFlashcardEducationList = flashcardEducationListRepository
+                        .findById(new FlashcardEducationList.FlashcardEducationListPK(
+                                newCoord, user)).orElseThrow();
 
-            }
+                flashcardEducationListRepository.save(
+                        new FlashcardEducationList(new FlashcardEducationList.FlashcardEducationListPK(
+                                newCoord, user), currentFlashcard));
+                newCoord++;
+                FlashcardEducationList nextFlashcard;
+                while (newCoord <= numberOfAllFlashcardsInDeck) {
+                    nextFlashcard = flashcardEducationListRepository.findById(new FlashcardEducationList.FlashcardEducationListPK(newCoord, user)).orElseThrow();
+                    savedFlashcardEducationList.setFlashcardEducationListPK(
+                            new FlashcardEducationList.FlashcardEducationListPK(
+                                    nextFlashcard.getFlashcardEducationListPK().getId(), user));
+                    flashcardEducationListRepository.save(savedFlashcardEducationList);
+                    savedFlashcardEducationList = nextFlashcard;
+                    newCoord++;
+                }
 
-            FlashcardEducationList savedFlashcardEducationList = flashcardEducationListRepository
-                    .findById(new FlashcardEducationList.FlashcardEducationListPK(
-                            newCoord, user)).orElseThrow();
-
-            flashcardEducationListRepository.save(
-                    new FlashcardEducationList(new FlashcardEducationList.FlashcardEducationListPK(
-                            newCoord, user), currentFlashcard));
-            newCoord++;
-            FlashcardEducationList nextFlashcard;
-            while (newCoord <= numberOfAllFlashcardsInDeck) {
-                nextFlashcard = flashcardEducationListRepository.findById(new FlashcardEducationList.FlashcardEducationListPK(newCoord, user)).orElseThrow();
                 savedFlashcardEducationList.setFlashcardEducationListPK(
                         new FlashcardEducationList.FlashcardEducationListPK(
-                                nextFlashcard.getFlashcardEducationListPK().getId(), user));
+                                newCoord, user));
                 flashcardEducationListRepository.save(savedFlashcardEducationList);
-                savedFlashcardEducationList = nextFlashcard;
-                newCoord++;
             }
 
-            savedFlashcardEducationList.setFlashcardEducationListPK(
-                    new FlashcardEducationList.FlashcardEducationListPK(
-                            newCoord, user));
-            flashcardEducationListRepository.save(savedFlashcardEducationList);
             numberOfAllFlashcardsInDeck++;
+        }
+    }
+
+    public void decreaseNumberOfDuplicatesIfExists(long chatId) {
+        User user = userRepository.findById(chatId).orElseThrow();
+        FlashcardEducationList flashcardEducationList = flashcardEducationListRepository.findById(
+                        new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user))
+                .orElseThrow();
+        Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
+        Optional<FlashcardStatus> flashcardStatusOptional =
+                flashcardStatusRepository.findById(new FlashcardStatus.FlashcardStatusPK(user, currentFlashcard));
+
+        if (flashcardStatusOptional.isPresent()) {
+            FlashcardStatus flashcardStatus = flashcardStatusOptional.get();
+            flashcardStatus.setNumberOfDuplicatedCards(flashcardStatus.getNumberOfDuplicatedCards() - 1);
+            flashcardStatusRepository.save(flashcardStatus);
         }
     }
 }
