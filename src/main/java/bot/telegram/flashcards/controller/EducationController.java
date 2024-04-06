@@ -84,6 +84,7 @@ public class EducationController {
                 educationService.duplicateFlashcard(chatId, 1);
                 break;
             case EASY:// can be changed to ->
+                educationService.decreaseNumberOfDuplicatesIfExists(chatId);
                 educationService.moveFlashcardToRepetitionList(chatId);
         }
 
