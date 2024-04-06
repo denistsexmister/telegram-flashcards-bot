@@ -79,12 +79,13 @@ public class EducationController {
 
         switch (answerStatus) {
             case HARDEST:
-                // create two duplicates of this card and shuffle them in the deck
+                educationService.duplicateFlashcard(chatId, 2);
                 break;
             case HARD:
-                // create one duplicate of this card and shuffle it in the deck
+                educationService.duplicateFlashcard(chatId, 1);
                 break;
             case EASY:// can be changed to ->
+                educationService.decreaseNumberOfDuplicatesIfExists(chatId);
                 educationService.moveFlashcardToRepetitionList(chatId);
         }
 
