@@ -9,8 +9,6 @@ import bot.telegram.flashcards.models.temporary.FlashcardStatus;
 import bot.telegram.flashcards.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -22,18 +20,17 @@ import java.util.*;
 @AllArgsConstructor
 @Slf4j
 public class EducationService {
-    private final FlashcardRepository flashcardRepository;
-    private final FlashcardPackageRepository flashcardPackageRepository;
     private final FlashcardEducationListRepository flashcardEducationListRepository;
     private final FlashcardRepetitionListRepository flashcardRepetitionListRepository;
     private final FlashcardStatusRepository flashcardStatusRepository;
 
     private final UserService userService;
+    private final FlashcardService flashcardService;
 
 
     public FlashcardPackage getFlashcardPackage(long packageId) throws NoSuchElementException {
 // TODO: add ifPresent() or isPresent() for this code, 'cause tests show NoSuchElementException
-        return flashcardPackageRepository.findById(packageId).orElseThrow();
+        return flashcardService.getFlashcardPackage(packageId);
     }
 
     public List<FlashcardPackage> getFlashcardPackageListByUser(long chatId) throws NoSuchElementException {
@@ -49,7 +46,7 @@ public class EducationService {
 
     public EditMessageText generateFlashcardList(long flashcardPackageId, long chatId, int messageId) {
         try {
-            FlashcardPackage flashcardPackage = flashcardPackageRepository.findById(flashcardPackageId).orElseThrow();
+            FlashcardPackage flashcardPackage = flashcardService.getFlashcardPackage(flashcardPackageId);
             List<Flashcard> flashcardList = flashcardPackage.getFlashcardList();
             User user = userService.getUser(chatId);
 

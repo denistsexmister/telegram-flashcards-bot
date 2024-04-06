@@ -13,29 +13,29 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class FlashcardsServiceTest {
+class FlashcardServiceTest {
 
     @Mock
     private FlashcardRepository flashcardRepository;
     @InjectMocks
-    private FlashcardsService flashcardsService;
+    private FlashcardService flashcardService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        flashcardsService = new FlashcardsService(flashcardRepository);
+        flashcardService = new FlashcardService(flashcardRepository);
         System.out.println("Setup flashcards service was called");
     }
 
     @AfterEach
     void tearDown() {
-        flashcardsService = null;
+        flashcardService = null;
         System.out.println("Teardown flashcards service was called");
     }
 
     @Test
     @DisplayName("It should get flashcard ids by flashcards id")
     void should_get_flashcard_ids_by_flashcards_id() {
-        Assertions.assertThat(flashcardsService.getFlashcardIdsByFlashcardsId(1L)).isNotNull();
+        Assertions.assertThat(flashcardService.getFlashcardIdsByFlashcardsId(1L)).isNotNull();
     }
 }
