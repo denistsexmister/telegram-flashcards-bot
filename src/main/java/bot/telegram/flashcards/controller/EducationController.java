@@ -78,15 +78,12 @@ public class EducationController {
         int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
 
         switch (answerStatus) {
-            case HARDEST:
-                educationService.duplicateFlashcard(chatId, 2);
-                break;
-            case HARD:
-                educationService.duplicateFlashcard(chatId, 1);
-                break;
-            case EASY:// can be changed to ->
+            case HARDEST -> educationService.duplicateFlashcard(chatId, 2);
+            case HARD -> educationService.duplicateFlashcard(chatId, 1);
+            case EASY -> {
                 educationService.decreaseNumberOfDuplicatesIfExists(chatId);
                 educationService.moveFlashcardToRepetitionList(chatId);
+            }
         }
 
         return educationService.nextFlashcard(chatId, messageId);
