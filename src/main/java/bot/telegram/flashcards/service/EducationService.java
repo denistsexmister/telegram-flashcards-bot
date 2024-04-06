@@ -33,6 +33,11 @@ public class EducationService {
         return flashcardService.getFlashcardPackage(packageId);
     }
 
+    public FlashcardEducationList getFlashcardEducationList(long id, User user) {
+        return flashcardEducationListRepository.findById(
+                new FlashcardEducationList.FlashcardEducationListPK(id, user)).orElseThrow();
+    }
+
     public List<FlashcardPackage> getFlashcardPackageListByUser(long chatId) throws NoSuchElementException {
         try {
             User user = userService.getUser(chatId);
@@ -85,8 +90,8 @@ public class EducationService {
         User user = userService.getUser(chatId);
         long numberOfFlashcards = flashcardEducationListRepository.
                 countFlashcardEducationListByFlashcardEducationListPK_User(user);
-        FlashcardEducationList flashcardEducationList = flashcardEducationListRepository.findById(
-                        new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user)).orElseThrow();
+        FlashcardEducationList flashcardEducationList =
+                getFlashcardEducationList(user.getCurrentFlashcard(), user);
         Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
 
         EditMessageText messageWithShownAnswer = EditMessageText.builder()
@@ -177,8 +182,8 @@ public class EducationService {
             return nextRepetitionFlashcard(chatId, messageId, 0);
         }
 
-        FlashcardEducationList flashcardEducationList = flashcardEducationListRepository.findById(
-                new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user)).orElseThrow();
+        FlashcardEducationList flashcardEducationList =
+                getFlashcardEducationList(user.getCurrentFlashcard(), user);
         Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
 
         EditMessageText editMessage = EditMessageText.builder()
@@ -197,9 +202,8 @@ public class EducationService {
 
     public void moveFlashcardToRepetitionList(long chatId) {
         User user = userService.getUser(chatId);
-        Flashcard currentFlashcard = flashcardEducationListRepository.findById(
-                new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user))
-                .orElseThrow().getFlashcard();
+        Flashcard currentFlashcard =
+                getFlashcardEducationList(user.getCurrentFlashcard(), user).getFlashcard();
         if (flashcardRepetitionListRepository.findAllByFlashcard(currentFlashcard).isEmpty()) {
             FlashcardRepetitionList flashcardRepetitionList =
                     new FlashcardRepetitionList(new FlashcardRepetitionList.FlashcardRepetitionListPK(
@@ -243,9 +247,8 @@ public class EducationService {
 
     public void duplicateFlashcard(long chatId, int numberOfDuplicates) {
         User user = userService.getUser(chatId);
-        FlashcardEducationList flashcardEducationList = flashcardEducationListRepository.findById(
-                        new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user))
-                .orElseThrow();
+        FlashcardEducationList flashcardEducationList =
+                getFlashcardEducationList(user.getCurrentFlashcard(), user);
         Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
 
         Optional<FlashcardStatus> flashcardStatusOptional = flashcardStatusRepository
@@ -302,7 +305,7 @@ public class EducationService {
                 newCoord++;
                 FlashcardEducationList nextFlashcard;
                 while (newCoord <= numberOfAllFlashcardsInDeck) {
-                    nextFlashcard = flashcardEducationListRepository.findById(new FlashcardEducationList.FlashcardEducationListPK(newCoord, user)).orElseThrow();
+                    nextFlashcard = getFlashcardEducationList(newCoord, user);
                     savedFlashcardEducationList.setFlashcardEducationListPK(
                             new FlashcardEducationList.FlashcardEducationListPK(
                                     nextFlashcard.getFlashcardEducationListPK().getId(), user));
@@ -323,9 +326,8 @@ public class EducationService {
 
     public void decreaseNumberOfDuplicatesIfExists(long chatId) {
         User user = userService.getUser(chatId);
-        FlashcardEducationList flashcardEducationList = flashcardEducationListRepository.findById(
-                        new FlashcardEducationList.FlashcardEducationListPK(user.getCurrentFlashcard(), user))
-                .orElseThrow();
+        FlashcardEducationList flashcardEducationList =
+                getFlashcardEducationList(user.getCurrentFlashcard(), user);
         Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
         Optional<FlashcardStatus> flashcardStatusOptional =
                 flashcardStatusRepository.findById(new FlashcardStatus.FlashcardStatusPK(user, currentFlashcard));
