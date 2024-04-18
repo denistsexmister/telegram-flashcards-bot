@@ -23,14 +23,33 @@ public class ShowAllPackagesController {
         int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
         long chatId = callbackQuery.getMessage().getChatId();
 
-        return showAllPackagesService.getPackage(flashcardPackageId ,messageId, chatId);
+        return showAllPackagesService.showPackage(flashcardPackageId ,messageId, chatId);
     }
 
-    public EditMessageText showAllCards(CallbackQuery callbackQuery) {
-        long flashcardId = Long.parseLong(callbackQuery.getData().split("_")[5]);
+//    public EditMessageText showFirstCardOfPackage(CallbackQuery callbackQuery) {
+//        long packageId = Long.parseLong(callbackQuery.getData().split("_")[2]);
+//        long flashcardId = Long.parseLong(callbackQuery.getData().split("_")[6]);
+//        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+//        long chatId = callbackQuery.getMessage().getChatId();
+//
+//        return showAllPackagesService.getFirstCardOfPackage(packageId, flashcardId, messageId, chatId);
+//    }
+
+//    public EditMessageText showFirstCard(CallbackQuery callbackQuery) {
+//        long packageId = Long.parseLong(callbackQuery.getData().split("_")[2]);
+//        int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
+//        long chatId = callbackQuery.getMessage().getChatId();
+//
+//        return showAllPackagesService.showFirstCardOfPackage(packageId, messageId, chatId);
+//    }
+
+
+    public EditMessageText showPreviousOrNextCard(CallbackQuery callbackQuery) {
+        long packageId = Long.parseLong(callbackQuery.getData().split("_")[2]);
         int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
         long chatId = callbackQuery.getMessage().getChatId();
 
-        return showAllPackagesService.showCardOfPackage(flashcardId, messageId, chatId);
+        return showAllPackagesService.getPreviousOrNextCard(packageId, messageId, chatId);
     }
+
 }

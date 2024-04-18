@@ -1,6 +1,5 @@
 package bot.telegram.flashcards.service;
 
-import bot.telegram.flashcards.controller.EducationController;
 import bot.telegram.flashcards.models.Flashcard;
 import bot.telegram.flashcards.models.FlashcardPackage;
 import bot.telegram.flashcards.repository.FlashcardPackageRepository;
@@ -12,9 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +20,7 @@ public class ShowAllPackagesService {
 
     private FlashcardPackageRepository flashcardPackageRepository;
     private FlashcardRepository flashcardRepository;
+
 
     public List<FlashcardPackage> getListOfPackages(Long chatId) throws NoSuchElementException {
         return (List<FlashcardPackage>) flashcardPackageRepository.findAll();
@@ -44,17 +42,17 @@ public class ShowAllPackagesService {
     }
 
 
-    public EditMessageText getPackage(long flashcardPackageId,int messageId, long chatId) {
-        FlashcardPackage flashcardPackage = flashcardPackageRepository.findById(flashcardPackageId).orElseThrow();
+    public EditMessageText showPackage(long packageId,int messageId, long chatId) {
+        FlashcardPackage flashcardPackage = flashcardPackageRepository.findById(packageId).orElseThrow();
 
 //create the rows with createRowWithOneButton
-        List<InlineKeyboardButton> firstRow = createRowWithOneButton(flashcardPackageId,
+        List<InlineKeyboardButton> firstRow = createRowWithOneButton(packageId,
                 "FLASHCARD_PACKAGE_%d_SELECTED",
                 "Start education");
-
-        List<InlineKeyboardButton> secondRow = createRowWithOneButton(flashcardPackageId,
-                "SHOW_ALL_CARDS_OF_PACKAGE_%d_SELECTED",
-                "Show all cards");
+//todo: make work packageId with flashcardId
+        List<InlineKeyboardButton> secondRow = createRowWithOneButton(packageId,
+                "FIRST_CARD_%d_OF_PACKAGE_CLICKED",
+                "Show first card of package");
 
 // Create the InlineKeyboardMarkup with the rows of buttons
         InlineKeyboardMarkup replyMarkup = InlineKeyboardMarkup.builder()
@@ -74,32 +72,68 @@ public class ShowAllPackagesService {
     }
 
 
-    public Flashcard getCardOfPackage(long flashcardId) throws NoSuchElementException {
-        return flashcardRepository.findById(flashcardId).orElseThrow();
+    public List<Flashcard> getAllCardsOfPackage(long packageId) {
+        FlashcardPackage flashcardPackage = flashcardPackageRepository.findById(packageId).orElseThrow();
+
+        return new ArrayList<>(flashcardPackage.getFlashcardList());
     }
 
-    public EditMessageText showCardOfPackage(long flashcardId, int messageId, long chatId) {
-        Flashcard flashcard = getCardOfPackage(flashcardId);
 
-        //todo: make buttons previous and next work with flashcards
+
+
+    public EditMessageText getPreviousOrNextCard(long packageId, int messageId, long chatId) {
+
+
+        List<Flashcard> allCards = getAllCardsOfPackage(packageId);
+
+        if (allCards.isEmpty()) {
+            // Handle case where no cards are found
+            return null; // or throw an exception, return a default message, etc.
+        }
+
+        int currentCard = 0;
+
+        Flashcard flashcard = allCards.get(currentCard);
+
+        int currentCardNumber = allCards.indexOf(flashcard) + 1;
+
+
         return EditMessageText.builder()
                 .chatId(chatId)
                 .messageId(messageId)
                 .text(String.format("Card: %d \n\nQuestion:\n%s\n\nAnswer:\n%s",
-                        flashcard.getId(),
+                        currentCardNumber,
                         flashcard.getQuestion(),
                         flashcard.getAnswer()))
                 .replyMarkup(InlineKeyboardMarkup.builder()
                         .keyboardRow(List.of(InlineKeyboardButton.builder()
-                                .text("Previous")
-                                .callbackData("PREVIOUS_CARD_CLICKED").build(),
-                                InlineKeyboardButton.builder()
                                 .text("Next")
-                                .callbackData("NEXT_CARD_CLICKED")
-                                .build()))
-                        .build())
+                                .callbackData(String.format("NEXT_CARD_%d_%d".formatted(packageId,++currentCard))) // Increment currentCard here
+                                .build())).build())
                 .build();
+
+
+//        int currentCard = 0;
+//
+//        Flashcard flashcard = flashcardRepository.findById(getAllCardsOfPackage(packageId).get(currentCard).getId()).orElseThrow();
+//
+//        int currentCardNumber = getAllCardsOfPackage(packageId).indexOf(flashcard) + 1;
+//
+//            return EditMessageText.builder()
+//                    .chatId(chatId)
+//                    .messageId(messageId)
+//                    .text(String.format("Card: %d \n\nQuestion:\n%s\n\nAnswer:\n%s",
+//                            ++currentCardNumber,
+//                            flashcard.getQuestion(),
+//                            flashcard.getAnswer()))
+//                    .replyMarkup(InlineKeyboardMarkup.builder()
+//                            .keyboardRow(List.of(InlineKeyboardButton.builder()
+//                                    .text("Next")
+//                                    .callbackData(String.format("NEXT_CARD",(++currentCard)))
+//                                    .build())).build())
+//                    .build();
     }
+
 
     public List<InlineKeyboardButton> createRowWithOneButton(long flashcardPackageId,String callbackData, String text){
         List<InlineKeyboardButton> row = new ArrayList<>();
@@ -110,4 +144,5 @@ public class ShowAllPackagesService {
 
         return row;
     }
+
 }
