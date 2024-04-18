@@ -14,6 +14,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.awt.SystemColor.text;
+
 @Service
 @AllArgsConstructor
 public class ShowAllPackagesService {
@@ -81,9 +83,7 @@ public class ShowAllPackagesService {
 
 
 
-    public EditMessageText getPreviousOrNextCard(long packageId, int messageId, long chatId) {
-
-
+    public EditMessageText showFirstCardOfPackage(long packageId, int messageId, long chatId) {
         List<Flashcard> allCards = getAllCardsOfPackage(packageId);
 
         if (allCards.isEmpty()) {
@@ -111,29 +111,46 @@ public class ShowAllPackagesService {
                                 .callbackData(String.format("NEXT_CARD_%d_%d".formatted(packageId,++currentCard))) // Increment currentCard here
                                 .build())).build())
                 .build();
-
-
-//        int currentCard = 0;
-//
-//        Flashcard flashcard = flashcardRepository.findById(getAllCardsOfPackage(packageId).get(currentCard).getId()).orElseThrow();
-//
-//        int currentCardNumber = getAllCardsOfPackage(packageId).indexOf(flashcard) + 1;
-//
-//            return EditMessageText.builder()
-//                    .chatId(chatId)
-//                    .messageId(messageId)
-//                    .text(String.format("Card: %d \n\nQuestion:\n%s\n\nAnswer:\n%s",
-//                            ++currentCardNumber,
-//                            flashcard.getQuestion(),
-//                            flashcard.getAnswer()))
-//                    .replyMarkup(InlineKeyboardMarkup.builder()
-//                            .keyboardRow(List.of(InlineKeyboardButton.builder()
-//                                    .text("Next")
-//                                    .callbackData(String.format("NEXT_CARD",(++currentCard)))
-//                                    .build())).build())
-//                    .build();
     }
 
+    public EditMessageText getPreviousOrNextCard(long packageId, int index,int messageId, long chatId) {
+
+
+        List<Flashcard> allCards = getAllCardsOfPackage(packageId);
+
+        if (allCards.isEmpty()) {
+
+            return EditMessageText.builder()
+                    .chatId(chatId)
+                    .messageId(messageId)
+                    .text("Flashcard package is empty")
+                    .build();
+        }
+
+
+        Flashcard flashcard = allCards.get(index);
+
+        int currentCardNumber = allCards.indexOf(flashcard) + 1;
+
+
+
+            return EditMessageText.builder()
+                    .chatId(chatId)
+                    .messageId(messageId)
+                    .text(String.format("Card: %d \n\nQuestion:\n%s\n\nAnswer:\n%s",
+                            currentCardNumber,
+                            flashcard.getQuestion(),
+                            flashcard.getAnswer()))
+                    .replyMarkup(InlineKeyboardMarkup.builder()
+                            .keyboardRow(List.of(InlineKeyboardButton.builder()
+                                    .text("Next")
+                                    .callbackData(String.format("NEXT_CARD_%d_%d".formatted(packageId, ++index))) // Increment currentCard here
+                                    .build())).build())
+                    .build();
+
+
+
+    }
 
     public List<InlineKeyboardButton> createRowWithOneButton(long flashcardPackageId,String callbackData, String text){
         List<InlineKeyboardButton> row = new ArrayList<>();
@@ -144,5 +161,4 @@ public class ShowAllPackagesService {
 
         return row;
     }
-
 }
