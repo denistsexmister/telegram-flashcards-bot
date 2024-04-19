@@ -79,10 +79,6 @@ public class ShowAllPackagesService {
 
         return new ArrayList<>(flashcardPackage.getFlashcardList());
     }
-
-
-
-
     public EditMessageText showFirstCardOfPackage(long packageId, int messageId, long chatId) {
         List<Flashcard> allCards = getAllCardsOfPackage(packageId);
 
@@ -96,7 +92,6 @@ public class ShowAllPackagesService {
         Flashcard flashcard = allCards.get(currentCard);
 
         int currentCardNumber = allCards.indexOf(flashcard) + 1;
-
 
         return EditMessageText.builder()
                 .chatId(chatId)
@@ -114,8 +109,6 @@ public class ShowAllPackagesService {
     }
 
     public EditMessageText getPreviousOrNextCard(long packageId, int index,int messageId, long chatId) {
-
-
         List<Flashcard> allCards = getAllCardsOfPackage(packageId);
 
         if (allCards.isEmpty()) {
@@ -132,24 +125,44 @@ public class ShowAllPackagesService {
 
         int currentCardNumber = allCards.indexOf(flashcard) + 1;
 
+        InlineKeyboardMarkup.InlineKeyboardMarkupBuilder markupBuilder = InlineKeyboardMarkup.builder();
+        List<InlineKeyboardButton> row = new ArrayList<>();
 
-
-            return EditMessageText.builder()
-                    .chatId(chatId)
-                    .messageId(messageId)
-                    .text(String.format("Card: %d \n\nQuestion:\n%s\n\nAnswer:\n%s",
-                            currentCardNumber,
-                            flashcard.getQuestion(),
-                            flashcard.getAnswer()))
-                    .replyMarkup(InlineKeyboardMarkup.builder()
-                            .keyboardRow(List.of(InlineKeyboardButton.builder()
-                                    .text("Next")
-                                    .callbackData(String.format("NEXT_CARD_%d_%d".formatted(packageId, ++index))) // Increment currentCard here
-                                    .build())).build())
+        //check if user is not on first card, if user see first card - this button will not be shown
+        if (index > 0) {
+            InlineKeyboardButton previousButton = InlineKeyboardButton.builder()
+                    .text("Previous")
+                    .callbackData(String.format("PREVIOUS_CARD_%d_%d", packageId, index - 1))
                     .build();
+            row.add(previousButton);
+        }
 
+        InlineKeyboardButton backToDescriptionButton = InlineKeyboardButton.builder()
+                .text("Back to description")
+                .callbackData("SHOW_ALL_PACKAGES_%d_SELECTED".formatted(packageId))
+                .build();
+        row.add(backToDescriptionButton);
 
+        //check if user is not on last, if user see last card - this button will not be shown
+        if (index < allCards.size() - 1) {
+            InlineKeyboardButton nextButton = InlineKeyboardButton.builder()
+                    .text("Next")
+                    .callbackData(String.format("NEXT_CARD_%d_%d", packageId, index + 1))
+                    .build();
+            row.add(nextButton);
+        }
 
+        markupBuilder.keyboardRow(row);
+
+        return EditMessageText.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .text(String.format("Card: %d \n\nQuestion:\n%s\n\nAnswer:\n%s",
+                        currentCardNumber,
+                        flashcard.getQuestion(),
+                        flashcard.getAnswer()))
+                .replyMarkup(markupBuilder.build())
+                .build();
     }
 
     public List<InlineKeyboardButton> createRowWithOneButton(long flashcardPackageId,String callbackData, String text){
