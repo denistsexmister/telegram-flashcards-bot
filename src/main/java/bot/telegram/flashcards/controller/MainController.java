@@ -70,6 +70,7 @@ public class MainController extends TelegramLongPollingBot {
         }
     }
 
+
     private void onMessageReceived(Update update) {
         Message msg = update.getMessage();
         String msgText = msg.getText();
@@ -90,26 +91,31 @@ public class MainController extends TelegramLongPollingBot {
         CallbackQuery callbackQuery = update.getCallbackQuery();
         String callbackQueryData = callbackQuery.getData();
 
-        switch (callbackQueryData) {
-            case "GET_GUIDE_BUTTON_CLICKED" -> startController.getGuideButtonClicked(callbackQuery)
-                    .forEach(this::executeMessage);
-            case "SHOW_ANSWER_CLICKED" -> executeMessage(educationController.showAnswer(callbackQuery));
-            case "0%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, FlashcardAnswerStatus.HARDEST));
-            case "25%_BUTTON_CLICKED", "50%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, FlashcardAnswerStatus.HARD));
-            case "75%_BUTTON_CLICKED", "100%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, FlashcardAnswerStatus.EASY));
-            case "SHOW_ANSWER_REPETITION_CLICKED" -> executeMessage(educationController.showAnswerRepetition(callbackQuery));
-            case "NEXT_QUESTION_REPETITION_CLICKED" -> executeMessage(educationController.nextQuestionRepetition(callbackQuery));
-            default -> {
-                if (callbackQueryData.matches("FLASHCARD_PACKAGE_\\d+_SELECTED")) {
-                    executeMessage(educationController.startEducation(callbackQuery));
-                } else if (callbackQueryData.matches("SHOW_ALL_PACKAGES_\\d+_SELECTED")) {
-                    executeMessage(showAllPackagesController.showPackageDescription(callbackQuery));
-                } else if (callbackQueryData.matches("SHOW_ALL_CARDS_OF_PACKAGE_\\d+_SELECTED")) {
-//                        executeMessage(educationController.showAllCardsOfPackage(callbackQuery));
+            switch (callbackQueryData) {
+                case "GET_GUIDE_BUTTON_CLICKED" -> startController.getGuideButtonClicked(callbackQuery)
+                        .forEach(this::executeMessage);
+                case "SHOW_ANSWER_CLICKED" -> executeMessage(educationController.showAnswer(callbackQuery));
+                case "0%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, FlashcardAnswerStatus.HARDEST));
+                case "25%_BUTTON_CLICKED", "50%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, FlashcardAnswerStatus.HARD));
+                case "75%_BUTTON_CLICKED", "100%_BUTTON_CLICKED" -> executeMessage(educationController.answerButtonClicked(callbackQuery, FlashcardAnswerStatus.EASY));
+                case "SHOW_ANSWER_REPETITION_CLICKED" -> executeMessage(educationController.showAnswerRepetition(callbackQuery));
+                case "NEXT_QUESTION_REPETITION_CLICKED" -> executeMessage(educationController.nextQuestionRepetition(callbackQuery));
+                default -> {
+                    if (callbackQueryData.matches("FLASHCARD_PACKAGE_\\d+_SELECTED")) {
+                        executeMessage(educationController.startEducation(callbackQuery));
+                    } else if (callbackQueryData.matches("SHOW_ALL_PACKAGES_\\d+_SELECTED")) {
+                        executeMessage(showAllPackagesController.showPackageDescription(callbackQuery));
+                    } else if(callbackQueryData.matches("FIRST_CARD_\\d+_OF_PACKAGE_\\d+_CLICKED")) {
+                        executeMessage(showAllPackagesController.showPreviousOrNextCard(callbackQuery));
+                    } else if (callbackQueryData.matches("PREVIOUS_CARD_\\d+_OF_PACKAGE_\\d+_CLICKED")) {
+                        executeMessage(showAllPackagesController.showPreviousOrNextCard(callbackQuery));
+                    } else if (callbackQueryData.matches("NEXT_CARD_\\d+_OF_PACKAGE_\\d+_CLICKED")) {
+                        executeMessage(showAllPackagesController.showPreviousOrNextCard(callbackQuery));
+                    }
                 }
             }
         }
-    }
+
 
     private <T extends Serializable, Method extends BotApiMethod<T>> void executeMessage(Method message) {
         try {

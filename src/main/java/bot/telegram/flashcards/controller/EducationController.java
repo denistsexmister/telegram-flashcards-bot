@@ -108,5 +108,6 @@ public class EducationController {
 
         return educationService.changeMsgToMsgWithShownAnswerRepetition(chatId, messageId);
     }
+
 }
 
