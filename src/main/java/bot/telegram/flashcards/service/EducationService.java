@@ -10,6 +10,7 @@ import bot.telegram.flashcards.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -164,8 +165,26 @@ public class EducationService {
         return EditMessageText.builder()
                 .chatId(chatId)
                 .messageId(messageId)
-                .text("CONGRATULATION_MESSAGE")
-                //.replyMarkup() //TODO: Implement button which will restart pack learning class
+                .parseMode(ParseMode.MARKDOWN)
+                .text(String.format("""
+                                *Congratulations!*\s
+                                                                
+                                You have completed all flashcards in the package:
+                                `%s`\s
+                                                                
+                                Statistics:\s
+                                Study time: (\\02d:\\02d:\\02d)  Hardest card: \\d  Hard card: \\d\s
+
+                                You can restart learning by clicking on the button below""",
+                        //TODO: implement chosen package name, not just number from list of packages
+                        //TODO: make statistics of learning
+                        userService.getUser(chatId).getFlashcardPackageList().get(0).getTitle()))
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .keyboard(Collections.singleton(List.of(InlineKeyboardButton.builder()
+                                .text("Restart learning")
+                                //TODO: restart education from the beginning in the chosen package
+                                .callbackData("FLASHCARD_PACKAGE_%d_SELECTED".formatted(1)).build())))
+                        .build())
                 .build();
     }
 
