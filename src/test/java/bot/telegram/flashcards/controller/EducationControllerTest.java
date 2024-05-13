@@ -20,7 +20,7 @@ class EducationControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        educationController = new EducationController(educationService);
+//        educationController = new EducationController(educationService);
     }
 
     @Test

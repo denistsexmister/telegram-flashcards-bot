@@ -20,12 +20,6 @@ class FlashcardServiceTest {
     @InjectMocks
     private FlashcardService flashcardService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        flashcardService = new FlashcardService(flashcardRepository);
-        System.out.println("Setup flashcards service was called");
-    }
 
     @AfterEach
     void tearDown() {

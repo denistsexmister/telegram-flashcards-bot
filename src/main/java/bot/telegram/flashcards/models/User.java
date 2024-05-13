@@ -5,6 +5,7 @@ import bot.telegram.flashcards.models.temporary.FlashcardRepetitionList;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,36 @@ public class User {
 
     @Column
     private Long currentFlashcard;
+
+    @Column
+    private LocalDateTime startStudyTime;
+
+    @Column
+    private LocalDateTime endStudyTime;
+
+    @Column
+    private Long hardCard;
+
+    @Column
+    private Long hardestCard;
+
+    public User(){
+        this.hardCard = 0L;
+        this.hardestCard = 0L;
+    }
+
+    public void addHardCard(Long increase) {
+        this.hardCard += increase;
+    }
+
+    public void addHardestCard(Long increase) {
+        this.hardestCard += increase;
+    }
+
+    public void setZeroForCards(){
+        this.hardCard = 0L;
+        this.hardestCard = 0L;
+    }
 
     @Builder
     private static User createUserWithId(long id) {

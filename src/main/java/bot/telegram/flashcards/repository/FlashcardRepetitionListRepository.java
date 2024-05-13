@@ -15,6 +15,7 @@ public interface FlashcardRepetitionListRepository
     @Query(nativeQuery = true, value = "SELECT id from flashcard_repetition_list where user_id = :userId order by id desc")
     List<Long> findIds(long userId);
     List<FlashcardRepetitionList> findAllByFlashcard(Flashcard flashcard);
+    List<FlashcardRepetitionList> findAllByFlashcardRepetitionListPK_User(User user);
 
     long countFlashcardRepetitionListByFlashcardRepetitionListPK_User(User user);
     @Transactional

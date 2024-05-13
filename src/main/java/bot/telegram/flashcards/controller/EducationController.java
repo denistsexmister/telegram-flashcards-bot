@@ -2,7 +2,10 @@ package bot.telegram.flashcards.controller;
 
 import bot.telegram.flashcards.misc.FlashcardAnswerStatus;
 import bot.telegram.flashcards.models.FlashcardPackage;
+import bot.telegram.flashcards.models.User;
 import bot.telegram.flashcards.service.EducationService;
+import bot.telegram.flashcards.service.FlashcardService;
+import bot.telegram.flashcards.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +28,7 @@ import java.util.List;
 public class EducationController {
 
     private final EducationService educationService;
+    private final UserService userService;
 
 
     public SendMessage startEducationCommandReceived(Update update) {
@@ -69,6 +75,14 @@ public class EducationController {
         int messageId = ((Message) callbackQuery.getMessage()).getMessageId();
         long chatId = callbackQuery.getMessage().getChatId();
 
+        User user = userService.getUser(chatId);
+
+        user.setStartStudyTime(LocalDateTime.now());
+
+        user.setZeroForCards();
+
+        userService.save(user);
+
         return educationService.generateFlashcardList(flashcardPackageId, chatId, messageId);
     }
 
@@ -91,7 +105,6 @@ public class EducationController {
                 educationService.moveFlashcardToRepetitionList(chatId);
             }
         }
-
         return educationService.nextFlashcard(chatId, messageId);
     }
 

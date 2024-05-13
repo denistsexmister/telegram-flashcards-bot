@@ -6,7 +6,9 @@ import bot.telegram.flashcards.models.User;
 import bot.telegram.flashcards.models.temporary.FlashcardEducationList;
 import bot.telegram.flashcards.models.temporary.FlashcardRepetitionList;
 import bot.telegram.flashcards.models.temporary.FlashcardStatus;
-import bot.telegram.flashcards.repository.*;
+import bot.telegram.flashcards.repository.FlashcardEducationListRepository;
+import bot.telegram.flashcards.repository.FlashcardRepetitionListRepository;
+import bot.telegram.flashcards.repository.FlashcardStatusRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,8 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -27,7 +31,6 @@ public class EducationService {
 
     private final UserService userService;
     private final FlashcardService flashcardService;
-
 
     public FlashcardPackage getFlashcardPackage(long packageId) throws NoSuchElementException {
 // TODO: add ifPresent() or isPresent() for this code, 'cause tests show NoSuchElementException
@@ -87,6 +90,7 @@ public class EducationService {
         }
     }
 
+
     public EditMessageText changeMsgToMsgWithShownAnswer(long chatId, int messageId) {
         User user = userService.getUser(chatId);
         long numberOfFlashcards = flashcardEducationListRepository.
@@ -129,8 +133,10 @@ public class EducationService {
                 countFlashcardRepetitionListByFlashcardRepetitionListPK_User(user);
 
         if (user.getCurrentFlashcard() > numberOfFlashcards) {
+            FlashcardRepetitionList firstCard = flashcardRepetitionListRepository.findAllByFlashcardRepetitionListPK_User(user).get(0);
+            long packageId = firstCard.getFlashcard().getFlashcardPackage().getId();
             clearTemporaryResourcesAfterEducation(chatId);
-            return createCongratulationMessage(chatId, messageId);
+            return createCongratulationMessage(chatId, messageId, packageId);
         }
 
         FlashcardRepetitionList flashcardRepetitionList = flashcardRepetitionListRepository.findById(
@@ -161,33 +167,42 @@ public class EducationService {
         userService.save(user);
     }
 
-    public EditMessageText createCongratulationMessage(long chatId, int messageId) {
+    public EditMessageText createCongratulationMessage(long chatId, int messageId, long packageId) {
+
+        User user = userService.getUser(chatId);
+        user.setEndStudyTime(LocalDateTime.now());
+
+        Duration studyTime = Duration.between(user.getStartStudyTime(), user.getEndStudyTime());
+
+        long hardest =  user.getHardestCard();
+
+        long hard = user.getHardCard();
+
+        userService.save(user);
+
         return EditMessageText.builder()
                 .chatId(chatId)
                 .messageId(messageId)
                 .parseMode(ParseMode.MARKDOWN)
                 .text(String.format("""
-                                *Congratulations!*\s
-                                                                
-                                You have completed all flashcards in the package:
-                                `%s`\s
-                                                                
-                                Statistics:\s
-                                Study time: (\\02d:\\02d:\\02d)  Hardest card: \\d  Hard card: \\d\s
-
-                                You can restart learning by clicking on the button below""",
-                        //TODO: implement chosen package name, not just number from list of packages
-                        //TODO: make statistics of learning
-                        userService.getUser(chatId).getFlashcardPackageList().get(0).getTitle()))
+                            *Congratulations!*\s
+                                                            
+                            You have completed all flashcards in the package\s
+                                                            
+                            Statistics:\s
+                            Study time: %02d:%02d:%02d  Hardest card: %d  Hard card: %d\s
+                            
+                            You can restart the learning below
+                            """,
+                        studyTime.toHoursPart(), studyTime.toMinutesPart(), studyTime.toSecondsPart(), hardest, hard))
                 .replyMarkup(InlineKeyboardMarkup.builder()
-                        .keyboard(Collections.singleton(List.of(InlineKeyboardButton.builder()
-                                .text("Restart learning")
-                                //TODO: restart education from the beginning in the chosen package
-                                .callbackData("FLASHCARD_PACKAGE_%d_SELECTED".formatted(1)).build())))
+                        .keyboardRow(List.of(InlineKeyboardButton.builder()
+                                .callbackData("FLASHCARD_PACKAGE_%d_SELECTED".formatted(packageId))
+                                .text("Learn again")
+                                .build()))
                         .build())
                 .build();
     }
-
     public EditMessageText nextFlashcard(long chatId, int messageId) {
         User user = userService.getUser(chatId);
 
@@ -270,13 +285,21 @@ public class EducationService {
                 getFlashcardEducationList(user.getCurrentFlashcard(), user);
         Flashcard currentFlashcard = flashcardEducationList.getFlashcard();
 
+
         Optional<FlashcardStatus> flashcardStatusOptional = flashcardStatusRepository
                 .findById(new FlashcardStatus.FlashcardStatusPK(user, currentFlashcard)); // TODO: repair problem https://stackoverflow.com/questions/76887311/listresultsconsumer-duplicate-row-was-found-and-assert-was-specified
+
+
         if (flashcardStatusOptional.isEmpty()){
             flashcardStatusRepository.save(new FlashcardStatus(
                     new FlashcardStatus.FlashcardStatusPK(user, currentFlashcard),
                     numberOfDuplicates,
                     null)); // TODO: set to appropriate difficulty
+            if(numberOfDuplicates == 1){
+                user.addHardCard(1L);
+            } else if (numberOfDuplicates == 2) {
+                user.addHardestCard(1L);
+            }
         } else {
             FlashcardStatus flashcardStatus = flashcardStatusOptional.get();
             flashcardStatus.setNumberOfDuplicatedCards(flashcardStatus.getNumberOfDuplicatedCards() - 1);
