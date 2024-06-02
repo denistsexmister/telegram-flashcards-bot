@@ -192,7 +192,12 @@ public class EducationService {
                             Statistics:\s
                             Study time: %02d:%02d:%02d  Hardest card: %d  Hard card: %d\s
                             
-                            You can restart the learning below
+                            You can choose another package for education with command:
+                            /starteducation
+                            
+                            OR
+                            
+                            You can restart the learning of a completed package below
                             """,
                         studyTime.toHoursPart(), studyTime.toMinutesPart(), studyTime.toSecondsPart(), hardest, hard))
                 .replyMarkup(InlineKeyboardMarkup.builder()
@@ -361,6 +366,8 @@ public class EducationService {
                                 newCoord, user));
                 flashcardEducationListRepository.save(savedFlashcardEducationList);
             }
+
+            userService.save(user);
 
             numberOfAllFlashcardsInDeck++;
         }
